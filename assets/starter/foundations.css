@@ -1,0 +1,6 @@
+/* foundations (prefix fd-) */
+.fd-row { display: grid; grid-template-columns: 84px 1fr 28px; gap: 10px; align-items: center; font-size: .8125rem; margin: 6px 0; }
+.fd-row i { display: block; height: 10px; border-radius: 3px; background: var(--color-primary); }
+.fd-radii { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.fd-radii div { width: 64px; height: 64px; border: 2px solid var(--color-primary); display: grid; place-items: center; font-size: .75rem; }
+.fd-shadow { margin-top: 10px; height: 96px; border-radius: var(--radius-lg); background: var(--color-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow-card); display: grid; place-items: center; font: .8125rem var(--font-mono); color: var(--color-text-muted); }

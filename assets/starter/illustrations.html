@@ -1,0 +1,31 @@
+<section id="illustrations">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Illustrations</h2>
+    <p>Hairline: isometric line figures that answer the pointer, drawn in the theme's own colours. One figure per situation (empty, waiting, error, success), never decoration. Move the pointer over them.</p>
+  </header>
+  <div class="fig-grid">
+    <article class="card fig-card">
+      <div class="fig-head"><div><span class="label">No search result</span><h3>Loupe</h3></div><span class="fig-read" data-read-for="loupe"></span></div>
+      <div class="hl-stage" data-kind="pkg" data-fig="loupe" aria-label="A loupe passing over a blank ruled sheet"></div>
+      <p class="muted">Search and filters that return nothing.</p>
+    </article>
+    <article class="card fig-card">
+      <div class="fig-head"><div><span class="label">No data yet</span><h3>Plot</h3></div><span class="fig-read" data-read-for="plot"></span></div>
+      <div class="hl-stage" data-kind="pkg" data-fig="plot" aria-label="A bar chart whose bars are still flat"></div>
+      <p class="muted">Dashboards and reports before the first numbers.</p>
+    </article>
+    <article class="card fig-card">
+      <div class="fig-head"><div><span class="label">Disconnected</span><h3>Plug</h3></div><span class="fig-read" data-read-for="plug"></span></div>
+      <div class="hl-stage" data-kind="pkg" data-fig="plug" aria-label="A plug that stops short of its socket"></div>
+      <p class="muted">An integration or a mailbox that lost its connection.</p>
+    </article>
+  </div>
+  <h3 class="sub">Usage</h3>
+  <ul class="notes">
+    <li><span>▸</span><div><b>Size.</b> 160–240 px wide in an empty state, above a title, one sentence and one action. Under 120 px use an icon instead.</div></li>
+    <li><span>▸</span><div><b>Colour.</b> The figure reads <code>--hairline-*</code>, mapped to the tokens: it follows the theme with no extra file.</div></li>
+    <li><span>▸</span><div><b>Text.</b> Every figure has an <code>aria-label</code> saying what it shows; the read-out is decoration and is hidden from screen readers by the figure.</div></li>
+    <li><span>▸</span><div><b>Email.</b> Emails cannot run scripts: use a PNG export of the figure at rest.</div></li>
+  </ul>
+</section>

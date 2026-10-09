@@ -1,0 +1,32 @@
+<section id="foundations">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Foundations</h2>
+    <p>Spacing on a 4 px grid, a short list of radii, one shadow per elevation, and motion durations. Components pick from these lists.</p>
+  </header>
+  <div class="grid-3">
+    <div class="card fd-space">
+      <span class="label">Spacing</span>
+      <div class="fd-row"><code>--space-1</code><i style="width:4px"></i>4</div>
+      <div class="fd-row"><code>--space-2</code><i style="width:8px"></i>8</div>
+      <div class="fd-row"><code>--space-4</code><i style="width:16px"></i>16</div>
+      <div class="fd-row"><code>--space-5</code><i style="width:24px"></i>24</div>
+      <div class="fd-row"><code>--space-6</code><i style="width:32px"></i>32</div>
+      <div class="fd-row"><code>--space-7</code><i style="width:48px"></i>48</div>
+      <div class="fd-row"><code>--space-8</code><i style="width:64px"></i>64</div>
+    </div>
+    <div class="card">
+      <span class="label">Radius</span>
+      <div class="fd-radii">
+        <div style="border-radius:var(--radius-sm)">sm</div><div style="border-radius:var(--radius-md)">md</div>
+        <div style="border-radius:var(--radius-lg)">lg</div><div style="border-radius:var(--radius-full)">full</div>
+      </div>
+      <p class="muted" style="margin-top:12px;font-size:var(--text-small)">Fields sm · panels md · cards lg · buttons and badges full.</p>
+    </div>
+    <div class="card">
+      <span class="label">Elevation and motion</span>
+      <div class="fd-shadow">--shadow-card</div>
+      <p class="muted" style="margin-top:12px;font-size:var(--text-small)"><code>--motion-fast</code> 120 ms hovers · <code>--motion-base</code> 200 ms panels · <code>--motion-slow</code> 320 ms page changes. Ease-out to arrive; nothing loops except a loader; <code>prefers-reduced-motion</code> stops it all.</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,83 @@
+/* =====================================================================
+   Animated icons. Every icon carries data-oi="<motion>" (the build adds it for {{ICON:name:motion}}).
+   The motion plays once on hover / keyboard focus of the closest .oi wrapper, or when .is-playing is
+   set from code (new notification, email received...). "draw" retraces every stroke: each element
+   needs pathLength="1" (the build adds it). Only "loader" loops. Everything stops under reduced motion.
+   Motions: beat blink bounce draw drop flash flip fly lift loader mail nudge-d nudge-l nudge-r nudge-u
+            pop ring scan shake spin stamp swing tilt turn twinkle wiggle write
+   ===================================================================== */
+:root {
+  --oi-out: cubic-bezier(.16, 1, .3, 1);
+  --oi-inout: cubic-bezier(.65, 0, .35, 1);
+  --oi-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+svg[data-oi] { transform-origin: 50% 50%; overflow: visible; }
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="draw"] > * { stroke-dasharray: 1 1; animation: oi-draw 620ms var(--oi-out) both; }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="draw"] > :nth-child(2) { animation-delay: 70ms; }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="draw"] > :nth-child(3) { animation-delay: 140ms; }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="draw"] > :nth-child(n+4) { animation-delay: 210ms; }
+
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="turn"] { animation: oi-turn 560ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="spin"] { animation: oi-spin 620ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="swing"] { transform-origin: 50% 8%; animation: oi-swing 680ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="ring"] { animation: oi-ring 620ms linear; }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="shake"] { animation: oi-shake 420ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="wiggle"] { animation: oi-wiggle 540ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="tilt"] { animation: oi-tilt 560ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="lift"] { animation: oi-lift 480ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="drop"] { animation: oi-drop 560ms var(--oi-spring); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="bounce"] { animation: oi-bounce 500ms var(--oi-spring); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="pop"] { animation: oi-pop 440ms var(--oi-spring); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="beat"] { animation: oi-beat 660ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="blink"] { animation: oi-blink 380ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="flip"] { animation: oi-flip 560ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="flash"] { animation: oi-flash 440ms linear; }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="twinkle"] { animation: oi-twinkle 620ms var(--oi-spring); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="scan"] { animation: oi-scan 660ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="fly"] { animation: oi-fly 580ms var(--oi-inout); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="write"] { transform-origin: 20% 80%; animation: oi-write 560ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="nudge-r"] { animation: oi-nudge-r 480ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="nudge-l"] { animation: oi-nudge-l 480ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="nudge-u"] { animation: oi-nudge-u 480ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="nudge-d"] { animation: oi-nudge-d 480ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="stamp"] { transform-origin: 50% 100%; animation: oi-stamp 560ms var(--oi-out); }
+  /* bespoke: the envelope's flap lifts (envelope icons whose first stroke is the flap) */
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="mail"] > :nth-child(1) { animation: oi-flap 500ms var(--oi-out); }
+  :is(.oi:hover, .oi:focus-visible, .oi.is-playing) svg[data-oi="mail"] { animation: oi-lift 500ms var(--oi-out); }
+  /* the only loop: loading states */
+  svg[data-oi="loader"] { animation: oi-spin-full 900ms linear infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  svg[data-oi="loader"] { animation: oi-fade 1.6s ease-in-out infinite; }
+}
+
+@keyframes oi-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes oi-turn { from { transform: rotate(0); } to { transform: rotate(90deg); } }
+@keyframes oi-spin { from { transform: rotate(0); } to { transform: rotate(180deg); } }
+@keyframes oi-spin-full { to { transform: rotate(360deg); } }
+@keyframes oi-swing { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(14deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(6deg); } 80% { transform: rotate(-3deg); } }
+@keyframes oi-ring { 0%, 70%, 100% { transform: rotate(0); } 10%, 30%, 50% { transform: rotate(-12deg); } 20%, 40%, 60% { transform: rotate(12deg); } }
+@keyframes oi-shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-2px); } 40%, 80% { transform: translateX(2px); } }
+@keyframes oi-wiggle { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-8deg); } 65% { transform: rotate(6deg); } }
+@keyframes oi-tilt { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(-14deg); } }
+@keyframes oi-lift { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-2px); } }
+@keyframes oi-drop { 0% { transform: translateY(-3px); opacity: .4; } 60% { transform: translateY(1px); opacity: 1; } 100% { transform: none; } }
+@keyframes oi-bounce { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-3px); } 70% { transform: translateY(1px); } }
+@keyframes oi-pop { 0% { transform: scale(1); } 35% { transform: scale(.8); } 100% { transform: scale(1); } }
+@keyframes oi-beat { 0%, 50%, 100% { transform: scale(1); } 20%, 70% { transform: scale(1.15); } }
+@keyframes oi-blink { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.1); } }
+@keyframes oi-flip { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0); } }
+@keyframes oi-flash { 0%, 100% { opacity: 1; } 25% { opacity: .25; } 50% { opacity: 1; } 75% { opacity: .5; } }
+@keyframes oi-twinkle { 0% { transform: scale(1) rotate(0); } 40% { transform: scale(.8) rotate(-12deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes oi-scan { 0%, 100% { transform: translate(0, 0); } 30% { transform: translate(-1.5px, -1.5px); } 70% { transform: translate(1.5px, 1.5px); } }
+@keyframes oi-fly { 0% { transform: translate(0, 0); opacity: 1; } 45% { transform: translate(6px, -6px); opacity: 0; } 46% { transform: translate(-6px, 6px); opacity: 0; } 100% { transform: translate(0, 0); opacity: 1; } }
+@keyframes oi-write { 0%, 100% { transform: translate(0, 0) rotate(0); } 30% { transform: translate(-1px, 1px) rotate(-8deg); } 60% { transform: translate(2px, 0) rotate(4deg); } }
+@keyframes oi-nudge-r { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(3px); } }
+@keyframes oi-nudge-l { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(-3px); } }
+@keyframes oi-nudge-u { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-3px); } }
+@keyframes oi-nudge-d { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(3px); } }
+@keyframes oi-stamp { 0%, 100% { transform: none; } 35% { transform: translateY(-3px); } 60% { transform: translateY(1px) scaleY(.9); } }
+@keyframes oi-flap { 0%, 100% { transform: none; } 40% { transform: translateY(-2.5px); } }
+@keyframes oi-fade { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }

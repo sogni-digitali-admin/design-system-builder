@@ -1,0 +1,48 @@
+<section id="components">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Components</h2>
+    <p>Each component with all its states. Every interactive one works with the keyboard and shows its focus ring.</p>
+  </header>
+  <div class="grid-2">
+    <div class="card">
+      <span class="label">Buttons</span>
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn-primary oi" type="button">{{ICON:plus:pop}} Primary</button>
+        <button class="btn btn-secondary" type="button">Secondary</button>
+        <button class="btn btn-ghost" type="button">Ghost</button>
+        <button class="btn btn-primary" type="button" disabled>Disabled</button>
+      </div>
+      <p class="muted" style="margin-top:14px;font-size:var(--text-small)">One primary button per view. Labels are verbs ("Save the quote"), never "OK".</p>
+    </div>
+    <div class="card">
+      <span class="label">Field</span>
+      <div class="field" style="margin-top:14px">
+        <label for="cp-email">Email</label>
+        <input class="input" id="cp-email" type="email" placeholder="name@company.com" aria-describedby="cp-email-help">
+        <small class="muted" id="cp-email-help">We only use it to send the quote.</small>
+      </div>
+      <div class="field cp-error" style="margin-top:14px">
+        <label for="cp-phone">Phone</label>
+        <input class="input" id="cp-phone" type="tel" value="12" aria-invalid="true" aria-describedby="cp-phone-err">
+        <small id="cp-phone-err">{{ICON:circle-x}} This number is too short.</small>
+      </div>
+    </div>
+    <div class="card">
+      <span class="label">Status</span>
+      <div class="row" style="margin-top:14px">
+        <span class="badge cp-st" data-st="success">{{ICON:circle-check}} Paid</span>
+        <span class="badge cp-st" data-st="warning">{{ICON:triangle-alert}} Due soon</span>
+        <span class="badge cp-st" data-st="danger">{{ICON:circle-x}} Overdue</span>
+        <span class="badge cp-st" data-st="info">{{ICON:info}} Draft</span>
+      </div>
+      <p class="muted" style="margin-top:14px;font-size:var(--text-small)">A status is never colour alone: icon + word.</p>
+    </div>
+    <div class="card">
+      <span class="label">Segmented control</span>
+      <div class="seg" role="group" aria-label="Period" style="margin-top:14px" id="cp-seg">
+        <button type="button" aria-pressed="true">Week</button><button type="button" aria-pressed="false">Month</button><button type="button" aria-pressed="false">Year</button>
+      </div>
+    </div>
+  </div>
+</section>

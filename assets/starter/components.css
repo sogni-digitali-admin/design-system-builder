@@ -1,0 +1,8 @@
+/* components (prefix cp-) */
+.cp-error .input { border-color: var(--color-danger); }
+.cp-error small { color: var(--color-danger); display: inline-flex; gap: 6px; align-items: center; }
+.cp-st { border: 1px solid transparent; }
+.cp-st[data-st="success"] { background: var(--color-success-soft); color: var(--color-success); }
+.cp-st[data-st="warning"] { background: var(--color-warning-soft); color: var(--color-warning); }
+.cp-st[data-st="danger"] { background: var(--color-danger-soft); color: var(--color-danger); }
+.cp-st[data-st="info"] { background: var(--color-info-soft); color: var(--color-info); }

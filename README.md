@@ -1,0 +1,70 @@
+# design-system-builder
+
+Un skill pour Claude Code qui fabrique un **design system complet** pour une marque.
+
+Il produit une seule page interactive, `design.html`, et le fichier `design.md` que lisent les agents de code. La page contient :
+- thèmes clair et sombre, couleurs vérifiées (contraste, daltonisme), typographie ;
+- icônes animées et illustrations **Hairline** qui réagissent à la souris ;
+- **splash et chargement en SVG animé**, composants avec tous leurs états ;
+- les écrans propres au produit : CRM, site web, e-commerce, réservation, SaaS, mobile/PWA, emails, assistant IA et agents.
+
+La page est **multilingue** (FR, IT, EN ou n'importe quelles langues) et se vérifie automatiquement dans un vrai navigateur.
+
+## Ce qu'il faut sur la machine
+
+- Python 3.10 ou plus récent ;
+- Node.js 18 ou plus récent ;
+- Microsoft Edge ou Google Chrome.
+
+Tout le reste est inclus dans `vendor/` : Hairline, son moteur de figures et Playwright. Il n'y a rien à installer.
+
+## Installation
+
+```bash
+git clone <url-du-dépôt> ~/.claude/skills/design-system-builder
+```
+
+Sous Windows, le dossier est `C:\Users\<vous>\.claude\skills\design-system-builder`. Redémarrez Claude Code ; le skill apparaît dans la liste des skills.
+
+## Utilisation
+
+Demandez simplement, par exemple :
+
+- « Crée le design system de notre CRM, en français, italien et anglais. Voici le logo et la planche de couleurs. »
+- « Ajoute une section Produits à notre design system. »
+- « Fais-moi le design system du site de la boulangerie, avec les emails des formulaires. »
+
+Claude suit les étapes du skill :
+1. découverte (il pose les questions qui manquent) ;
+2. projet de départ, couleurs, icônes ;
+3. sections, build ;
+4. traductions ;
+5. vérifications ;
+6. captures d'écran qu'il regarde avant de dire que c'est fini.
+
+Pour un gros design system, il peut répartir les sections entre plusieurs agents.
+
+## Les commandes, si vous voulez les lancer à la main
+
+```bash
+python scripts/new_project.py ../acme --name "Acme" --type crm --langs fr,it,en --source fr
+python scripts/fetch_icons.py sets                       # les meilleures bibliothèques d'icônes, licences en direct
+python scripts/fetch_icons.py get ../acme lucide house mail
+python scripts/palette_check.py ../acme                  # contraste + daltonisme
+python scripts/build.py ../acme                          # → ../acme/dist/design.html, design.md, splash/
+node scripts/qa.mjs ../acme                              # erreurs, requêtes, mobile 390 px, traductions
+node scripts/qa.mjs ../acme shots                        # captures de chaque section
+```
+
+## Contenu
+
+| Dossier | Rôle |
+|---|---|
+| `SKILL.md` | les instructions que suit Claude |
+| `references/` | la méthode détaillée par sujet, plus `modules/` (les écrans par type de produit) |
+| `scripts/` | création de projet, build, couleurs, icônes, traductions, vérifications |
+| `assets/` | gabarit de page, CSS de base, scripts de la page, sections de départ, modèles |
+| `vendor/` | dépendances incluses (voir `THIRD_PARTY_NOTICES.md`) |
+| `evals/` | cas de test du skill |
+
+Les icônes ne sont pas incluses. Le skill aide à choisir la bonne bibliothèque (Lucide, Tabler, Phosphor, Hugeicons…) et ne télécharge que les icônes utilisées, avec leur licence notée dans `icons/SOURCES.md`.

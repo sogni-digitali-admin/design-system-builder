@@ -1,0 +1,23 @@
+{
+  "skill_name": "design-system-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "On lance Rivo, une petite app SaaS de réservation pour salons de coiffure (FR + EN, le français est la langue source). Couleurs de la marque : vert sapin #1F4D3A, crème #F6F1E7, terracotta #C8643C. Pas encore de logo, juste le nom. Fais-moi le design system complet avec les écrans de réservation, le splash et les emails de confirmation.",
+      "expected_output": "A project folder with ds.config.json using the brand colours (dark theme designed), palette_check passing, icons fetched with SOURCES.md, core sections rewritten in French, a booking screens section (flow with slots, calendar), an emails section, splash SVGs generated from a fallback mark, English translations merged, qa.mjs PASSED, screenshots looked at, a hand-over listing guessed values.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I already have a design system project in ./acme-ds built with this skill (CRM, languages en + it). Add a Products section like Krayin's product module: catalogue, product page with inventory per warehouse, stock adjustment dialog and quote lines. Keep the numbering and navigation right and translate it.",
+      "expected_output": "A new section registered in ds.config.json after the CRM screens, parts/products.html/.css/.js/.md with prefix-scoped classes, stock rules (available = in stock − allocated, reason required), keyboard-accessible combobox for quote lines, Italian strings translated through the i18n pipeline, full build and qa.mjs PASSED, screenshots in both themes and at 390 px.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Can you make empty-state illustrations for our CRM's design system? We need something for: no leads yet, inbox empty, no search results, integration disconnected, and the 404/500 error pages. Use the Hairline stuff.",
+      "expected_output": "A gap analysis table mapping each situation to a package figure (loupe, plug…) or a custom figure drawn with vendor/hairline-create (written to hairline/figures/, validated, looked at with hairline_look.mjs), an illustrations section and error-page cards using hl-stage markup, figures following both themes, QA passing.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<section id="theme">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Theme settings</h2>
+    <p>The semantic colours of each theme, with their contrast on the page background. Components only ever use these names, never a raw hex: that is what lets a theme change in one place.</p>
+  </header>
+  <div class="grid-2">
+    <div class="card" data-theme="light">
+      <span class="label">Light</span>
+      <ul class="slots">{{SLOTS_LIGHT}}</ul>
+    </div>
+    <div class="card" data-theme="dark">
+      <span class="label">Dark</span>
+      <ul class="slots">{{SLOTS_DARK}}</ul>
+    </div>
+  </div>
+  <h3 class="sub">Contrast</h3>
+  <p class="muted">WCAG 2.2: AA needs 4.5:1 for text, 3:1 for large text and interface marks. A pair marked "Large text / graphics" never carries body text.</p>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="tbl"><table><thead><tr><th>Light</th><th>Colour</th><th>On</th><th>Ratio</th><th>Use</th></tr></thead><tbody>{{CONTRAST_LIGHT}}</tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>Dark</th><th>Colour</th><th>On</th><th>Ratio</th><th>Use</th></tr></thead><tbody>{{CONTRAST_DARK}}</tbody></table></div>
+  </div>
+</section>

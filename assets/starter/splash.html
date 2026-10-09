@@ -1,0 +1,45 @@
+<section id="splash">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Splash and loading</h2>
+    <p>The opening of the app is one SVG image: the mark draws itself, takes its colours and the name arrives. The animation lives inside the file, so it plays the same in the app, in a PWA start page or as a plain &lt;img&gt;. Under 1.6 s, once per cold start, never between pages.</p>
+  </header>
+  <div class="grid-2">
+    <figure class="sp-card card">
+      <img class="sp-img" src="{{SPLASH_LIGHT_URI}}" alt="" width="400" height="400" data-splash>
+      <figcaption class="row"><span class="label">Light · splash/splash-light.svg</span><button class="btn btn-ghost oi" type="button" data-splash-replay>{{ICON:rotate-ccw:spin}} Replay</button></figcaption>
+    </figure>
+    <figure class="sp-card card">
+      <img class="sp-img" src="{{SPLASH_DARK_URI}}" alt="" width="400" height="400" data-splash>
+      <figcaption class="row"><span class="label">Dark · splash/splash-dark.svg</span><button class="btn btn-ghost oi" type="button" data-splash-replay>{{ICON:rotate-ccw:spin}} Replay</button></figcaption>
+    </figure>
+  </div>
+
+  <h3 class="sub">Timeline</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>Start</th><th>Length</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>Draw</td><td class="num">0 ms</td><td class="num">700 ms</td><td>Each shape of the mark is traced in the primary colour, one after the other (40 ms apart).</td></tr>
+      <tr><td>Fill</td><td class="num">550 ms</td><td class="num">400 ms</td><td>The brand colours fill the shapes; the tracing line fades out.</td></tr>
+      <tr><td>Name</td><td class="num">800 ms</td><td class="num">400 ms</td><td>The name rises 8 px and fades in.</td></tr>
+      <tr><td>Hand-over</td><td class="num">1 300 ms</td><td class="num">300 ms</td><td>The app fades the image out and shows its first screen's skeleton in place.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Loading</h3>
+  <div class="grid-2">
+    <div class="card sp-load-card">
+      <div class="sp-loader" role="status">
+        <img src="{{LOADER_LIGHT_URI}}" alt="" width="40" height="40" class="sp-l-light"><img src="{{LOADER_DARK_URI}}" alt="" width="40" height="40" class="sp-l-dark">
+        <span>Loading your workspace…</span>
+      </div>
+      <p class="muted">splash/loader-light.svg · loader-dark.svg. Waits over 1 s: the mark breathes (the only loop in the system). Over 8 s: say what is happening and offer a way out.</p>
+    </div>
+    <ul class="notes card">
+      <li><span>▸</span><div><b>Once.</b> Cold start of the app or the PWA only. A page change uses the skeleton of the next screen, never the splash.</div></li>
+      <li><span>▸</span><div><b>PWA.</b> The system shows its own launch screen first: <code>background_color</code> = the page background of the default theme, <code>theme_color</code> = the top bar, a maskable icon with 20% safe area. The SVG starts on the same colour, so nothing flashes.</div></li>
+      <li><span>▸</span><div><b>Reduced motion.</b> No tracing: the finished image fades in over 200 ms. The file handles it itself.</div></li>
+      <li><span>▸</span><div><b>Name.</b> Inside an &lt;img&gt; the web font is not loaded: for production, swap the &lt;text&gt; for the outlined wordmark (paths), so the name looks the same everywhere.</div></li>
+    </ul>
+  </div>
+</section>
