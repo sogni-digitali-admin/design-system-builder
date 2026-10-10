@@ -32,6 +32,7 @@
     });
   }
   paintToggle();
+  document.addEventListener("ds:theme", paintToggle); // the accessibility panel can change the theme too
 
   /* copy: any element with data-copy="value" */
   document.addEventListener("click", function (ev) {

@@ -1,6 +1,6 @@
 // Quality checks on a built design system page.
-//   node qa.mjs <project_dir> [all|console|requests|mobile|i18n|shots] [--file NAME.html] [--section ID] [--lang all|xx] [--out DIR]
-// all = console + requests + mobile + i18n (exit code 1 on any FAIL). shots writes PNGs you must then open and look at.
+//   node qa.mjs <project_dir> [all|console|requests|mobile|a11y|i18n|shots] [--file NAME.html] [--section ID] [--lang all|xx] [--out DIR]
+// all = console + requests + mobile + a11y + i18n (exit code 1 on any FAIL). shots writes PNGs you must then open and look at.
 import { readFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { launch, openPage, scrollThrough, fileUrl } from "./_browser.mjs";
@@ -101,6 +101,38 @@ async function checkI18n(b) {
   }
 }
 
+async function checkA11y(b) {
+  console.log("\n# accessibility panel: 200 % text at 390 px (both themes), Alt+A opens, Esc closes and returns focus");
+  for (const theme of ["light", "dark"]) {
+    const { page, errors } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
+    const has = await page.evaluate(() => !!(window.DSA11y && window.DSA11y.element));
+    if (!has) { console.log("  skip: no <ds-a11y> on the page"); await page.close(); return; }
+    await page.evaluate(() => { const el = window.DSA11y.element; el.prefs = Object.assign({}, el.prefs, { text: 200 }); });
+    await scrollThrough(page);
+    await page.waitForTimeout(1500);
+    const r = await page.evaluate(() => {
+      const W = document.documentElement.clientWidth, bad = [];
+      const clipped = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { if (getComputedStyle(p).overflowX !== "visible") return true; } return false; };
+      document.querySelectorAll("main *").forEach((e) => {
+        const box = e.getBoundingClientRect();
+        if (box.width > 0 && box.right > W + 1 && !clipped(e)) bad.push(`${e.tagName.toLowerCase()}.${String(e.className).split(" ")[0]} in #${e.closest("section")?.id}:${Math.round(box.right)}`);
+      });
+      return { sw: document.documentElement.scrollWidth, W, bad: [...new Set(bad)].slice(0, 8) };
+    });
+    if (r.sw > r.W) fail(`${theme} 200 %: page is ${r.sw}px wide for ${r.W}px · ${r.bad.join(", ")}`);
+    else console.log(`  ok ${theme} 200 %: ${r.sw}px`);
+    await page.keyboard.press("Alt+KeyA");
+    await page.waitForTimeout(400);
+    const open = await page.evaluate(() => window.DSA11y.element.isOpen === true);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    const closed = await page.evaluate(() => window.DSA11y.element.isOpen === false);
+    if (!open || !closed) fail(`${theme}: Alt+A / Esc did not open and close the panel`);
+    errors.forEach((e) => fail(`${theme}: ${e}`));
+    await page.close();
+  }
+}
+
 async function shots(b) {
   const out = resolve(opt("--out", join(project, "dist", "shots")));
   mkdirSync(out, { recursive: true });
@@ -125,6 +157,7 @@ try {
   if (cmd === "all" || cmd === "console") await checkConsole(b);
   if (cmd === "all" || cmd === "requests") await checkRequests(b);
   if (cmd === "all" || cmd === "mobile") await checkMobile(b);
+  if (cmd === "all" || cmd === "a11y") await checkA11y(b);
   if ((cmd === "all" || cmd === "i18n") && cfg.langs.length > 1) await checkI18n(b);
   if (cmd === "shots") await shots(b);
 } finally {

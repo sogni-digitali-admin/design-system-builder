@@ -231,3 +231,65 @@ def design_md_tokens(cfg: dict) -> str:
     fonts = cfg.get("fonts", {})
     out += ["## Type", "heading: %s" % fonts.get("heading", "system-ui"), "body: %s" % fonts.get("body", "system-ui"), ""]
     return "\n".join(out)
+
+
+# --------------------------------------------------------------------------- accessibility panel (assets/runtime/a11y.js)
+# Colour-vision palettes found by scripts/cvd_palettes.py and checked with palette_check.py (0 FAIL): every pair
+# clears ΔE 15 for normal vision and ΔE 8 under protan, deutan and tritan simulation (light: all pairs; dark: all
+# neighbours), and each colour reaches 3:1 on the surface. Both modes share the series colours; the status colours
+# differ: red-green moves success/danger off the red-green axis (blue/vermilion), blue-yellow off the blue-yellow one.
+SAFE_SERIES = {"light": ["#6B2F01", "#1292C0", "#BF2F56", "#814EC6", "#174276", "#A28218"],
+               "dark": ["#78DCA9", "#878BF2", "#E6705F", "#25BAF2", "#E2C162", "#E486C6"]}
+CVD = {
+    "rg": {**SAFE_SERIES,
+           "status": {"light": {"success": "#0B5DB0", "warning": "#8A4B00", "danger": "#8F2D00", "info": "#5B2C83"},
+                      "dark": {"success": "#8CC8F5", "warning": "#F5C04A", "danger": "#FFA27A", "info": "#D3A6F0"}}},
+    "by": {**SAFE_SERIES,
+           "status": {"light": {"success": "#006B5E", "warning": "#8C3A00", "danger": "#A3141F", "info": "#004F8C"},
+                      "dark": {"success": "#5FD6C4", "warning": "#FFB37A", "danger": "#FF8A94", "info": "#7FC4F5"}}},
+}
+
+
+def push(color: str, toward: str, against: list[str], target: float) -> str:
+    """Mix `color` toward black or white until it reaches `target` contrast with every colour in `against`."""
+    end = "#000000" if toward == "black" else "#FFFFFF"
+    for i in range(0, 101, 4):
+        c = mix(end, color, i / 100)
+        if all(contrast(c, b) >= target for b in against):
+            return c
+    return end
+
+
+def contrast_tokens(cfg: dict, theme: str) -> dict[str, str]:
+    """Stronger text, borders and primary for "Contraste élevé": AAA (7:1) for text where the palette allows."""
+    t = resolve(cfg, theme)
+    way = "black" if theme == "light" else "white"
+    bg = t["bg"] if theme == "light" else mix("#000000", t["bg"], 0.35)
+    surface = t["surface"] if theme == "light" else mix("#000000", t["surface"], 0.25)
+    text = push(t["text"], way, [bg, surface], 12)
+    muted = push(t["text-muted"], way, [bg, surface], 7)
+    border = push(t["border"], way, [bg, surface], 3)
+    primary = push(t["primary"], way, [bg, surface], 7)
+    on_primary = "#FFFFFF" if contrast("#FFFFFF", primary) >= contrast("#000000", primary) else "#000000"
+    out = {"color-text": text, "color-text-muted": muted, "color-border": border, "card-border": border,
+           "color-primary": primary, "color-primary-hover": push(primary, way, [bg], 9), "button-bg": primary,
+           "color-on-primary": on_primary, "input-border": primary, "color-focus": text, "color-accent": primary}
+    if theme == "dark":
+        out.update({"color-bg": bg, "color-surface": surface, "gradient-bg": "none"})
+    return out
+
+
+def a11y_css(cfg: dict) -> str:
+    """CSS the accessibility panel injects: high contrast and colour-vision palettes for both themes."""
+    dark = 'html.dark,html[data-theme="dark"]'
+    decl = lambda d: ";".join("--%s:%s" % kv for kv in d.items())
+    css = ["html[data-a11y-contrast=more]{%s}" % decl(contrast_tokens(cfg, "light")),
+           "html[data-a11y-contrast=more].dark,html[data-a11y-contrast=more][data-theme=dark]{%s}" % decl(contrast_tokens(cfg, "dark"))]
+    n = max(len(cfg.get("chart", {}).get("light", [])), 6)
+    for kind, pal in CVD.items():
+        for theme in ("light", "dark"):
+            vals = {"chart-%d" % (i + 1): pal[theme][i % len(pal[theme])] for i in range(n)}
+            vals.update({"color-" + k: v for k, v in pal["status"][theme].items()})
+            sel = "html[data-a11y-cvd=%s]" % kind if theme == "light" else "html[data-a11y-cvd=%s].dark,html[data-a11y-cvd=%s][data-theme=dark]" % (kind, kind)
+            css.append("%s{%s}" % (sel, decl(vals)))
+    return "".join(css)

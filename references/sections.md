@@ -15,6 +15,7 @@ needs them. Each entry says what it must contain to be "done". Order in `ds.conf
 | icons | set + licence, sizes, colour rule, motion vocabulary, the grid of icons used | `icons/SOURCES.md` complete |
 | splash | animated SVG splash light/dark, loader, timeline, PWA launch rules | frames checked (start, middle, end) |
 | illustrations | Hairline figures mapped to situations (empty, waiting, error, success), usage rules | one figure per situation, each with its place in the product |
+| accessibility | `<ds-a11y>` live on the page: principle (preferences, not an overlay), options with WCAG criteria, placement in the product, keyboard, privacy, API (`references/accessibility.md`) | panel works by keyboard, at 200 % text and 390 px; `qa.mjs a11y` passes |
 | components | buttons, fields, selects, checkboxes/switches, badges, tabs, segmented, tables, cards, toasts, dialogs, menus, pagination, empty states — every state | keyboard + focus + disabled + error shown |
 | integration | tokens CSS, framework mapping (Tailwind theme, CSS variables, the app's icon names), design.md | copy buttons work; mapping matches the codebase |
 | notes | decisions, sources, licences, guessed values, open questions | nothing guessed is presented as fact |

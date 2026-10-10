@@ -1,6 +1,6 @@
 ---
 name: design-system-builder
-description: Build a complete, multilingual brand design system as one interactive page (design.html) plus a machine-readable design.md for coding agents — tokens and light/dark themes, colour and contrast checks, typography, animated icons, Hairline illustrations that answer the pointer, an animated SVG splash and loader, components with every state, and the product's own screens (CRM, website, e-commerce, booking, SaaS, mobile/PWA, emails, AI assistant and agents). Use this skill whenever someone asks for a design system, a style guide, a brand kit or UI kit, design tokens, a "design.html" or "design.md", a theme for an app, or wants to add a section (products, emails, mobile views, splash, illustrations, AI chat…) to an existing design system — even if they only say "make the brand guidelines for X" or "document our UI".
+description: Build a complete, multilingual brand design system as one interactive page (design.html) plus a machine-readable design.md for coding agents — tokens and light/dark themes, colour and contrast checks, typography, animated icons, Hairline illustrations that answer the pointer, an animated SVG splash and loader, components with every state, an accessibility button and preferences panel, and the product's own screens (CRM, website, e-commerce, booking, SaaS, mobile/PWA, emails, AI assistant and agents). Use this skill whenever someone asks for a design system, a style guide, a brand kit or UI kit, design tokens, a "design.html" or "design.md", a theme for an app, or wants to add a section (products, emails, mobile views, splash, illustrations, AI chat…) to an existing design system — even if they only say "make the brand guidelines for X" or "document our UI".
 ---
 
 # Design system builder
@@ -51,7 +51,8 @@ type. Each section is `parts/<id>.html` (+ optional `.css`, `.js`, `.md`) and on
 sections`; **the order of that list is the order, numbering and navigation of the page** — never number by hand.
 Write sections to the contract below. For illustrations read `references/illustrations-hairline.md`; for AI
 assistants, chat and agents `references/ai-ux.md`; for emails `references/emails.md`; for phones and PWA
-`references/mobile-pwa.md`; for components and charts `references/components.md`.
+`references/mobile-pwa.md`; for components and charts `references/components.md`; for the accessibility panel
+`references/accessibility.md`.
 
 ### 5. Build and preview
 ```bash
@@ -126,7 +127,9 @@ A design system people trust is specific, complete and honest:
 - **Both themes, deliberately.** Check the dark theme as carefully as the light one; status colours keep AA on
   their pale backgrounds in both.
 - **Accessible.** Keyboard reachable, visible focus, labels on icon buttons, status never colour alone (icon +
-  word), contrast AA, `prefers-reduced-motion` respected (only a loader loops).
+  word), contrast AA, `prefers-reduced-motion` respected (only a loader loops), text in `rem` so the page reflows
+  at 200 % text. The accessibility panel (`<ds-a11y>`, core section) adapts the page on top of that; it never
+  stands in for it.
 - **Restraint.** One illustration per situation, one background texture per screen (never two), one icon set,
   one primary button per view. A screen should have a point of view, not every component at once.
 - **Honest.** Provenance on derived values ("derived", "proposed"), guessed values listed in Notes, licences of
@@ -135,11 +138,11 @@ A design system people trust is specific, complete and honest:
 ## Files
 
 ```
-scripts/   new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · fetch_icons.py
+scripts/   new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · cvd_palettes.py · fetch_icons.py
            i18n_extract.mjs · i18n_merge.py · qa.mjs · hairline_look.mjs · _browser.mjs
-assets/    template.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount)
+assets/    template.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y) · fonts/ (Atkinson Hyperlegible)
            starter/ (the core sections) · glossary_template.md · brief_template.md
-references/ discovery · sections · tokens-and-color · icons · illustrations-hairline · components · ai-ux
+references/ discovery · sections · tokens-and-color · icons · illustrations-hairline · components · accessibility · ai-ux
            emails · mobile-pwa · i18n · orchestration · qa · pitfalls · modules/ (screen packs per product type)
 vendor/    hairline 0.5.0 (MIT) · hairline-create (MIT, figure engine and skill) · playwright-core 1.64 (Apache-2.0)
 ```

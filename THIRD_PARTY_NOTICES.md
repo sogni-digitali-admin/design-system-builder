@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | `vendor/hairline/` | @lucasmarkes/hairline — isometric line figures | 0.5.0 (pinned) | MIT — `vendor/hairline/LICENSE` | https://github.com/lucasmarkes/hairline · https://www.npmjs.com/package/@lucasmarkes/hairline |
 | `vendor/hairline-create/` | hairline-create — the authoring skill and engine (kernel) of Hairline figures, from the same repository | matches 0.5.0 (kernel sha256 in `kernel.js` header) | MIT — same licence as the repository, see `vendor/hairline/LICENSE` | https://github.com/lucasmarkes/hairline (`npx skills add lucasmarkes/hairline`) |
+| `assets/fonts/atkinson-hyperlegible-*` | Atkinson Hyperlegible (Braille Institute of America), woff2 latin + latin-ext, for the accessibility panel's « readable font » | 2020 release (Google Fonts) | SIL OFL 1.1 — `assets/fonts/atkinson-hyperlegible-OFL.txt` | https://fonts.google.com/specimen/Atkinson+Hyperlegible |
 | `vendor/playwright-core/` | Playwright core (browser automation, no browsers included) | 1.64.0 | Apache-2.0 — `vendor/playwright-core/LICENSE`, `NOTICE` | https://github.com/microsoft/playwright |
 
 Icons are **not** bundled: `scripts/fetch_icons.py` downloads the icons a project uses from the set its team chose

@@ -168,12 +168,13 @@ def logo(project: Path, cfg: dict, key: str) -> str:
 
 def runtime_js(cfg: dict, project: Path) -> str:
     conf = {"slug": cfg["slug"], "source": cfg["source_lang"], "langs": cfg["langs"],
-            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied")}}
+            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied")},
+            "a11yCss": TK.a11y_css(cfg)}
     dict_path = project / "i18n" / "dict.json"
     data = json.loads(read(dict_path)) if dict_path.exists() else {}
     js = "window.DS = %s;\nwindow.DSI18n = %s;\n" % (json.dumps(conf, ensure_ascii=False),
                                                    json.dumps(data, ensure_ascii=False, separators=(",", ":")))
-    for name in ("doc.js", "hairline-mount.js", "i18n.js"):
+    for name in ("doc.js", "hairline-mount.js", "a11y.js", "i18n.js"):
         js += "\n" + read(ASSETS / "runtime" / name)
     return script_safe(js)
 
@@ -242,6 +243,8 @@ def copy_assets(cfg: dict, project: Path, dist: Path) -> None:
         shutil.copy2(project / face["src"], dist / "fonts" / Path(face["src"]).name)
     if (project / "icons").exists():
         shutil.copytree(project / "icons", dist / "icons", dirs_exist_ok=True)
+    # Atkinson Hyperlegible (OFL) for the accessibility panel's "readable font"
+    shutil.copytree(ASSETS / "fonts", dist / "fonts", dirs_exist_ok=True)
     (dist / "splash").mkdir(exist_ok=True)
     for name, svg in SP.all_svgs(project, cfg).items():
         (dist / "splash" / (name + ".svg")).write_text(svg, encoding="utf-8")

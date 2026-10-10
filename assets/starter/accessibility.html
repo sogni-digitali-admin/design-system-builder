@@ -1,0 +1,60 @@
+<section id="accessibility">
+  <header class="sec-h">
+    <span class="sec-n">{{SEC_N}}</span>
+    <h2>Accessibility</h2>
+    <p>A button and a preferences panel, &lt;ds-a11y&gt;, so each person can adapt the interface to their needs: text, colours, motion, reading. It works on this whole page: try it.</p>
+  </header>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="label">Principle</span>
+      <h3 class="ax-h">A preferences panel, not an overlay</h3>
+      <ul class="notes">
+        <li><span>▸</span><div><b>Accessible without it.</b> The product meets WCAG 2.2 AA through its own code. The panel is never a condition of access.</div></li>
+        <li><span>▸</span><div><b>It adapts, it does not repair.</b> It does not claim to fix or certify accessibility, never rewrites the page with AI and loads no third-party script.</div></li>
+        <li><span>▸</span><div><b>The system first.</b> Reduced motion, more contrast, dark mode and forced colours set in the operating system apply by default; the panel overrides them only on an explicit choice.</div></li>
+        <li><span>▸</span><div><b>Private.</b> Choices stay on the device (or in the user's profile when the product saves them), no cookie, no tracking. « Reset » restores the defaults.</div></li>
+      </ul>
+    </div>
+    <div class="card ax-try">
+      <span class="ax-try-ic oi">{{ICON:accessibility:pop}}</span>
+      <h3>Try it on this page</h3>
+      <p class="muted">The button in the corner of the page, or <kbd>Alt</kbd> + <kbd>A</kbd> from anywhere.</p>
+      <button class="btn btn-primary oi" type="button" data-a11y-open>{{ICON:accessibility:pop}} Open the panel</button>
+    </div>
+  </div>
+
+  <h3 class="sub">Options</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Group</th><th>Option</th><th>What it changes</th><th>WCAG 2.2</th></tr></thead>
+    <tbody>
+      <tr><td>Quick profiles</td><td>Low vision · Dyslexia · Motion sensitivity · Focus (ADHD) · Mobility and keyboard · Colour blindness</td><td>One click combines several options below; each stays adjustable.</td><td>—</td></tr>
+      <tr><td>Text</td><td>Text size 100–200 %</td><td>Scales every rem-based size; layouts reflow instead of overflowing.</td><td>1.4.4 · 1.4.10</td></tr>
+      <tr><td>Text</td><td>Line spacing, letter and word spacing</td><td>Up to the values of the text-spacing criterion.</td><td>1.4.12</td></tr>
+      <tr><td>Text</td><td>Readable font · left alignment · limited line length</td><td>Atkinson Hyperlegible (OFL), never justified text, 70 characters a line at most.</td><td>1.4.8 (AAA, informative)</td></tr>
+      <tr><td>Colour</td><td>Theme · high contrast</td><td>Light, dark or system; stronger text, borders and primary (computed from the brand, AAA where the palette allows).</td><td>1.4.3 · 1.4.6 · 1.4.11</td></tr>
+      <tr><td>Colour</td><td>Colour-blind palettes (red-green, blue-yellow) · reduced saturation · underlined links</td><td>Replacement palettes for charts and statuses, checked for protan, deutan and tritan vision. The page is never filtered.</td><td>1.4.1</td></tr>
+      <tr><td>Motion</td><td>Reduce animations · pause videos and GIFs · no autoplay</td><td>Stops transitions, illustrations that move on their own, autoplaying media.</td><td>2.2.2 · 2.3.3</td></tr>
+      <tr><td>Reading</td><td>Strong focus · reading guide or mask · large cursor · marked headings and links · larger targets</td><td>Two-tone focus ring visible on any background, a band or mask that follows pointer and focus, 44 px targets.</td><td>2.4.7 · 2.4.11 · 2.4.13 · 2.5.8</td></tr>
+      <tr><td>Reading</td><td>Read aloud</td><td>Reads the selection with the device's own voice (speechSynthesis): no external service.</td><td>—</td></tr>
+      <tr><td>Language</td><td>Interface language</td><td>The languages of the product.</td><td>3.1.1</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Placement and behaviour</h3>
+  <div class="grid-3">
+    <div class="card feat"><span class="feat-ic">{{ICON:accessibility:pop}}</span><h3>Button</h3><p class="muted">Fixed in a bottom corner (<code>position="left|right"</code>), never covering a chat bubble, a bottom bar or toasts. Also reachable from the user menu and the skip links (<code>data-a11y-open</code>).</p></div>
+    <div class="card feat"><span class="feat-ic">{{ICON:layout-grid:pop}}</span><h3>Panel</h3><p class="muted">A non-modal side sheet on desktop, full screen and modal on phones. Focus goes to its title on open; Esc closes it and returns focus to what opened it.</p></div>
+    <div class="card feat"><span class="feat-ic">{{ICON:copy:pop}}</span><h3>Persistence</h3><p class="muted">localStorage on public sites (<code>storage="local"</code>), the user's profile in an app (<code>storage="none"</code> + <code>el.prefs = …</code>).</p></div>
+  </div>
+
+  <h3 class="sub">For developers</h3>
+  <div class="codewrap"><button class="btn" type="button" data-copy-pre>{{ICON:copy}} Copy</button><pre data-i18n-skip>&lt;ds-a11y position="left" storage="local"&gt;&lt;/ds-a11y&gt;
+
+&lt;!-- effects land on &lt;html&gt; as data-a11y-* attributes; pages opt in by using rem for text and the tokens for colours --&gt;
+&lt;html data-a11y-text="150" data-a11y-contrast="more" data-a11y-motion="reduce" …&gt;
+
+DSA11y.open() · close() · toggle() · reset() · set({ text: 150 }) · prefs · reducedMotion()
+document.addEventListener("ds-a11y:change", (e) =&gt; save(e.detail.prefs));   // :open · :close · :lang
+&lt;my-widget data-motion-host&gt;   ← receives motion="reduce" when motion is reduced</pre></div>
+</section>

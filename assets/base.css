@@ -177,3 +177,15 @@ pre { margin: 0; overflow: auto; background: var(--color-surface); border: 1px s
 #toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 24px); opacity: 0; pointer-events: none; transition: .2s; background: var(--color-primary); color: var(--color-on-primary); padding: 10px 18px; border-radius: var(--radius-full); font-size: var(--text-small); font-weight: 500; z-index: 40; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation-duration: .001ms !important; } }
+
+/* ---- large text (accessibility panel up to 200 %, browser zoom): content wraps instead of pushing the page sideways */
+.grid-2 > *, .grid-3 > *, .slots, .slot, .slot-main, .slot-side, .stats li, .row > *, .fig-foot > * { min-width: 0; }
+.stats b, .stats small, .slot-main code, .slot .copy, .slot .chip { overflow-wrap: anywhere; white-space: normal; }
+html[data-a11y-text] .stats { grid-template-columns: minmax(0, 1fr); }
+html[data-a11y-text] :is(.tag, .chip, .label, .badge, .fig-read, [class*="pill"]) { white-space: normal; overflow-wrap: anywhere; height: auto; max-width: 100%; }
+html[data-a11y-text] :is(.card, [class*="grid"] > *) { min-width: 0; }
+html[data-a11y-text] :is(.card, p, li, dd, h1, h2, h3, h4, b, strong, small, span, a, button) { overflow-wrap: anywhere; }
+html[data-a11y-text] :is(button, .btn, [role="radio"], [role="tab"], input, select, label) { white-space: normal; max-width: 100%; min-width: 0; }
+html[data-a11y-text] :is([role="radiogroup"], [role="group"], [role="tablist"], [role="toolbar"], .seg, .row, .nav) { flex-wrap: wrap; max-width: 100%; }
+html[data-a11y-text] main :is(div, label, p, form, fieldset, article, ul, ol) { max-width: 100%; }
+@media (max-width: 560px) { .theme-toggle .lbl { display: none; } }

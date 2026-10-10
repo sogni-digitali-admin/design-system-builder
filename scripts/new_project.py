@@ -29,12 +29,13 @@ CORE = [  # id, title (English: translate into the source language), part, icon,
     ("splash", "Splash", "splash", "rocket", "fly"),
     ("illustrations", "Illustrations", "illustrations", "wand-sparkles", "wiggle"),
     ("components", "Components", "components", "component", "pop"),
+    ("accessibility", "Accessibility", "accessibility", "accessibility", "pop"),
     ("integration", "Integration", "integration", "plug", "nudge-u"),
     ("notes", "Notes", "notes", "notebook-pen", "tilt"),
 ]
 STARTER_ICONS = ["sparkles", "palette", "swatch-book", "type", "layout-grid", "shapes", "wand-sparkles", "component",
                  "plug", "notebook-pen", "download", "copy", "check", "x", "info", "triangle-alert", "circle-check",
-                 "circle-x", "search", "plus", "arrow-right", "play", "rocket", "rotate-ccw"]
+                 "circle-x", "search", "plus", "arrow-right", "play", "rocket", "rotate-ccw", "accessibility"]
 
 PLACEHOLDER = {
     "primitives": [

@@ -1,0 +1,6 @@
+/* accessibility (prefix ax-): the panel itself lives in assets/runtime/a11y.js */
+.ax-h { font-size: 1.25rem; margin: 6px 0 10px; }
+.ax-try { display: grid; justify-items: center; align-content: center; gap: 12px; text-align: center; border-style: dashed; }
+.ax-try-ic { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary); }
+.ax-try-ic .ic { width: 30px; height: 30px; }
+kbd { font: 700 .75rem/1 var(--font-mono); padding: 3px 7px; border: 1px solid var(--color-border); border-bottom-width: 2px; border-radius: 6px; background: var(--card-bg); }

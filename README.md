@@ -6,6 +6,7 @@ Il produit une seule page interactive, `design.html`, et le fichier `design.md` 
 - thèmes clair et sombre, couleurs vérifiées (contraste, daltonisme), typographie ;
 - icônes animées et illustrations **Hairline** qui réagissent à la souris ;
 - **splash et chargement en SVG animé**, composants avec tous leurs états ;
+- un **bouton d'accessibilité** avec son panneau de préférences (taille du texte, contraste, daltonisme, mouvement, guide de lecture, lecture à voix haute), actif sur la page ;
 - les écrans propres au produit : CRM, site web, e-commerce, réservation, SaaS, mobile/PWA, emails, assistant IA et agents.
 
 La page est **multilingue** (FR, IT, EN ou n'importe quelles langues) et se vérifie automatiquement dans un vrai navigateur.

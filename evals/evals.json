@@ -18,6 +18,12 @@
       "prompt": "Can you make empty-state illustrations for our CRM's design system? We need something for: no leads yet, inbox empty, no search results, integration disconnected, and the 404/500 error pages. Use the Hairline stuff.",
       "expected_output": "A gap analysis table mapping each situation to a package figure (loupe, plug…) or a custom figure drawn with vendor/hairline-create (written to hairline/figures/, validated, looked at with hairline_look.mjs), an illustrations section and error-page cards using hl-stage markup, figures following both themes, QA passing.",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Ajoute un bouton d'accessibilité à notre design system (dossier ./maison-ds, site vitrine d'un restaurant, FR + EN) : je veux que les gens puissent agrandir le texte, mettre un contraste plus fort, des couleurs pour daltoniens et couper les animations. Le chat du site est en bas à droite.",
+      "expected_output": "The accessibility section (from assets/starter) in ds.config.json and parts/, rewritten in French, with <ds-a11y position=\"left\"> because the chat bubble uses the bottom-right corner; the section states it is a preferences panel, not a compliance overlay; options listed with their WCAG criteria; high-contrast values computed by the build from the brand; qa.mjs a11y passes (200 % text at 390 px, Alt+A/Esc); English translations merged.",
+      "files": []
     }
   ]
 }
