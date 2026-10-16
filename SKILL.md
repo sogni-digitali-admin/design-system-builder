@@ -29,6 +29,7 @@ business facts (prices, plan limits, legal text): use clearly-marked demo values
 ### 2. Scaffold
 ```bash
 python scripts/new_project.py <project_dir> --name "Acme" --type crm --langs fr,it,en --source fr
+# more than light/dark: --themes light,dark,brand   (block copied from dark with a TODO; brand:light copies light)
 ```
 This creates `ds.config.json`, starter sections in `parts/`, and folders for icons, translations, Hairline
 figures and notes. It builds and passes QA immediately, with placeholder colours — keep it that way at every step.
@@ -37,7 +38,9 @@ them (the source language is the one the page is written in; the others are tran
 
 ### 3. Foundations
 - **Colours and themes** — `references/tokens-and-color.md`. Put the brand's primitives and the two themes in
-  `ds.config.json`. Dark is designed, not inverted. Then run `python scripts/palette_check.py <project_dir>` and
+  `ds.config.json`. Dark is designed, not inverted. A third mode (national, campaign, sub-brand) is an extra
+  entry in `themes` with a `base`; the page then offers a theme picker (see the reference: when to add one, and how
+  to propose a new dark palette as named alternatives). Then run `python scripts/palette_check.py <project_dir>` and
   fix every FAIL (text contrast, and chart colours that colour-blind readers cannot tell apart).
 - **Logo** — set `logo.light`, `logo.dark` and `logo.mark` (square symbol) to SVG files in `assets/`. The splash
   and loader are generated from the mark as animated SVG images.
@@ -52,7 +55,10 @@ sections`; **the order of that list is the order, numbering and navigation of th
 Write sections to the contract below. For illustrations read `references/illustrations-hairline.md`; for AI
 assistants, chat and agents `references/ai-ux.md`; for emails `references/emails.md`; for phones and PWA
 `references/mobile-pwa.md`; for components and charts `references/components.md`; for the accessibility panel
-`references/accessibility.md`.
+`references/accessibility.md`; for sign-in and account access `references/auth.md`; for in-app notifications
+`references/notifications.md`; for structured and AI search `references/search.md`; for smartwatches
+`references/wearables.md`; for photos and their licences `references/imagery.md`. Loyalty programmes and the
+spaces around a service business (customer portal, partners, crew, B2B) have screen packs in `references/modules/`.
 
 ### 5. Build and preview
 ```bash
@@ -104,7 +110,8 @@ Every section file follows this shape, so the build can number it and the runtim
 - **Icons**: `{{ICON:name}}` or `{{ICON:name:motion}}` (motions: `assets/icon-motion.css`); give the control
   the class `oi` so the motion plays on hover and focus. In JS, clone a `<template>` that holds the icon.
 - **Markers** you can use in a part: `{{SEC_N}} {{NAME}} {{VERSION}} {{DATE}} {{SWATCHES}} {{SLOTS_LIGHT}}
-  {{SLOTS_DARK}} {{CONTRAST_LIGHT}} {{CONTRAST_DARK}} {{CHART_SWATCHES}} {{ICON_GRID}} {{TOKENS_PRE}}
+  {{SLOTS_DARK}} {{CONTRAST_LIGHT}} {{CONTRAST_DARK}} {{THEME_CARDS}} {{CONTRAST_TABLES}} {{THEME_COUNT}}
+  (every theme; also {{SLOTS_<ID>}} / {{CONTRAST_<ID>}} per theme id, upper case) {{CHART_SWATCHES}} {{ICON_GRID}} {{TOKENS_PRE}}
   {{DESIGN_MD_PRE}} {{SPLASH_LIGHT_URI}} {{SPLASH_DARK_URI}} {{LOADER_LIGHT_URI}} {{LOADER_DARK_URI}}`.
   Template variables shown as content (emails) use lowercase `{{first_name}}` — uppercase is reserved for markers.
 - **Text**: write visible text in the source language, whole sentences in one text node where you can. Strings
@@ -140,9 +147,10 @@ A design system people trust is specific, complete and honest:
 ```
 scripts/   new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · cvd_palettes.py · fetch_icons.py
            i18n_extract.mjs · i18n_merge.py · qa.mjs · hairline_look.mjs · _browser.mjs
-assets/    template.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y) · fonts/ (Atkinson Hyperlegible)
+assets/    template.html · theme-toggle.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y) · fonts/ (Atkinson Hyperlegible)
            starter/ (the core sections) · glossary_template.md · brief_template.md
 references/ discovery · sections · tokens-and-color · icons · illustrations-hairline · components · accessibility · ai-ux
-           emails · mobile-pwa · i18n · orchestration · qa · pitfalls · modules/ (screen packs per product type)
+           emails · mobile-pwa · auth · notifications · search · wearables · imagery · i18n · orchestration · qa · pitfalls
+           modules/ (screen packs per product type, incl. loyalty and portals)
 vendor/    hairline 0.5.0 (MIT) · hairline-create (MIT, figure engine and skill) · playwright-core 1.64 (Apache-2.0)
 ```

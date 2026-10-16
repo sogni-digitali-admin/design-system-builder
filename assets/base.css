@@ -48,6 +48,10 @@ img, svg { max-width: 100%; }
 .lang-sw button { min-width: 34px; height: 28px; padding: 0 8px; border: 0; border-radius: var(--radius-full); background: transparent; color: var(--color-text-muted); font: 700 12px var(--font-body); letter-spacing: .04em; cursor: pointer; }
 .lang-sw button.is-on { background: var(--color-primary); color: var(--color-on-primary); }
 @media (max-width: 560px) { .lang-sw button { min-width: 28px; padding: 0 5px; } }
+.theme-sw { flex: none; display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); }
+.theme-sw button { height: 28px; padding: 0 10px; border: 0; border-radius: var(--radius-full); background: transparent; color: var(--color-text-muted); font: 700 12px var(--font-body); white-space: nowrap; cursor: pointer; }
+.theme-sw button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+@media (max-width: 720px) { .theme-sw button[aria-pressed="false"] { display: none; } } /* narrow: only the current theme shows, a click moves to the next */
 .theme-toggle { flex: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 14px; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); background: transparent; font-size: var(--text-small); font-weight: 500; }
 .tt-sun { display: var(--show-light); } .tt-moon { display: var(--show-dark); }
 @media (max-width: 420px) { .theme-toggle .lbl { display: none; } }

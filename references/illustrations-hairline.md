@@ -73,3 +73,22 @@ and what to do, two links (back, home). Give the developers the template file fo
 - Always an `aria-label` in the source language (translated like any text); the read-out is decorative.
 - Reduced motion: figures still answer the pointer but nothing plays on its own.
 - Emails cannot run scripts: export the figure at rest as PNG (screenshot of the stage at 2×) for email use.
+
+## 6. Colour mode (optional)
+A brand may want figures that carry its colours. Keep the 1 px line and the isometry; add a colour layer on top.
+- **Fills per material**, not per shape: water, sand, sails/flags, sun, vegetation, wood. One class per material
+  (`f-sea`, `f-sand`, `f-wood`…) and a stroke class for key edges (`s-sea`, `s-primary`, `s-soft`). Map
+  figure → element indices → classes in one table in the JS (`PAINT`), applied after mount; never edit the kernel.
+- **Tokens, not hex**: fill = `color-mix(in srgb, var(--material) 28%, var(--hl-ground))`, with a plain
+  `opacity` fallback declared first for browsers without `color-mix`. The dark theme uses the dark tokens.
+- **The single bright point stays the accent** (`.dot`). The soft shadow is the ground colour tinted toward the
+  sea/sand token, never grey-black.
+- **3–5 colours per figure at most.** Colour only what reads as a material; leave the rest as hairline.
+- **The pointer intensifies colour**: fills go from soft to full opacity on the object the pointer or focus
+  reaches (transition ≤ 200 ms; none under reduced motion).
+- **Toggle "Colour / Line only"** (a switch above the gallery, persisted, default stated) restores the original
+  hairline look; the Line-only state must stay complete and correct on its own.
+- **Contrast**: coloured strokes that carry meaning ≥ 3:1 against the ground in both themes (non-text contrast);
+  pale decorative fills are exempt.
+- **Translate every visible figure description.** The package ships English `means` text: override it per figure
+  in the source language (and the `aria-label` with it) so no English reaches the page.

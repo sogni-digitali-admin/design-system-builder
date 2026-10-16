@@ -7,7 +7,9 @@ Il produit une seule page interactive, `design.html`, et le fichier `design.md` 
 - icônes animées et illustrations **Hairline** qui réagissent à la souris ;
 - **splash et chargement en SVG animé**, composants avec tous leurs états ;
 - un **bouton d'accessibilité** avec son panneau de préférences (taille du texte, contraste, daltonisme, mouvement, guide de lecture, lecture à voix haute), actif sur la page ;
-- les écrans propres au produit : CRM, site web, e-commerce, réservation, SaaS, mobile/PWA, emails, assistant IA et agents.
+- les écrans propres au produit : CRM, site web, e-commerce, réservation, SaaS, mobile/PWA, emails, assistant IA et agents ;
+- autant de **thèmes** que la marque en a besoin (clair, sombre, et par exemple un mode « Mauritian » aux couleurs du drapeau), chacun vérifié ;
+- les écrans de connexion, un système de notifications propre à la marque, la recherche classique et IA, la montre connectée, le programme de fidélité, les portails (client, partenaires, équipage, B2B), la signature e-mail et les modèles WhatsApp, et la gestion des photos et de leurs licences.
 
 La page est **multilingue** (FR, IT, EN ou n'importe quelles langues) et se vérifie automatiquement dans un vrai navigateur.
 

@@ -1,10 +1,12 @@
-/* Runs in <head> before paint: theme and language from the visitor's last choice or their system,
+/* Runs in <head> before paint: theme and language from the visitor's last choice or their system
+   (a saved theme must be one of THEMES; "Auto" = nothing saved = light or dark as the system says),
    the helpers dsLang() / dsT({fr, en, …}) for scripts that build text, and the per-language rule for [data-l]. */
 (function () {
-  var SLUG = "__SLUG__", SOURCE = "__SOURCE__", LANGS = __LANGS__;
+  var SLUG = "__SLUG__", SOURCE = "__SOURCE__", LANGS = __LANGS__, THEMES = __THEMES__;
   var root = document.documentElement, theme = "light", lang = SOURCE;
   try {
-    theme = localStorage.getItem(SLUG + "-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var saved = localStorage.getItem(SLUG + "-theme");
+    theme = THEMES.indexOf(saved) >= 0 ? saved : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     lang = localStorage.getItem(SLUG + "-lang") || (navigator.language || SOURCE).slice(0, 2).toLowerCase();
   } catch (e) { /* storage blocked: system theme, source language */ }
   if (LANGS.indexOf(lang) < 0) lang = SOURCE;

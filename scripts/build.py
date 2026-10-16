@@ -57,6 +57,11 @@ def load_config(project: Path) -> dict:
     ids = [s["id"] for s in cfg["sections"]]
     if len(ids) != len(set(ids)):
         sys.exit("ds.config.json: two sections share an id")
+    missing = [t for t in TK.BASES if t not in cfg["themes"]]
+    if missing:
+        sys.exit("ds.config.json: themes must include light and dark (more themes may follow); missing %s" % ", ".join(missing))
+    for theme in TK.theme_ids(cfg):
+        TK.base_of(cfg, theme)
     cfg["_project"] = str(project)
     return cfg
 
@@ -166,9 +171,25 @@ def logo(project: Path, cfg: dict, key: str) -> str:
     return svg.replace("<svg", '<svg class="brand-logo logo-%s" aria-hidden="true" focusable="false"' % key, 1)
 
 
+def theme_labels(cfg: dict) -> dict:
+    """Picker labels per theme and language, from theme_names or the UI strings."""
+    return {"auto": {l: TK.ui_text(l, "auto") for l in cfg["langs"]},
+            "themes": {t: {l: TK.theme_label(cfg, t, l) for l in cfg["langs"]} for t in TK.theme_ids(cfg)}}
+
+
+def theme_control(cfg: dict) -> str:
+    """The theme toggle (light and dark only) or, with more themes, a segmented picker: Auto + each theme."""
+    if len(TK.theme_ids(cfg)) <= 2:
+        return read(ASSETS / "theme-toggle.html").rstrip("\n").replace("{{UI_TOGGLE}}", ui(cfg, "toggle")).replace("{{UI_LIGHT}}", ui(cfg, "light"))
+    src = cfg["source_lang"]
+    items = [("auto", ui(cfg, "auto"))] + [(t, TK.theme_label(cfg, t, src)) for t in TK.theme_ids(cfg)]
+    buttons = "".join('<button type="button" data-theme-set="%s" aria-pressed="false">%s</button>' % (k, html.escape(v)) for k, v in items)
+    return '<div class="theme-sw" id="theme-picker" role="group" aria-label="%s" data-i18n-skip>%s</div>' % (html.escape(ui(cfg, "theme")), buttons)
+
+
 def runtime_js(cfg: dict, project: Path) -> str:
-    conf = {"slug": cfg["slug"], "source": cfg["source_lang"], "langs": cfg["langs"],
-            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied")},
+    conf = {"slug": cfg["slug"], "source": cfg["source_lang"], "langs": cfg["langs"], "themes": TK.theme_ids(cfg),
+            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied"), **theme_labels(cfg)},
             "a11yCss": TK.a11y_css(cfg)}
     dict_path = project / "i18n" / "dict.json"
     data = json.loads(read(dict_path)) if dict_path.exists() else {}
@@ -181,7 +202,8 @@ def runtime_js(cfg: dict, project: Path) -> str:
 
 def head_js(cfg: dict) -> str:
     return script_safe(read(ASSETS / "runtime" / "head.js").replace("__SLUG__", cfg["slug"])
-                       .replace("__SOURCE__", cfg["source_lang"]).replace("__LANGS__", json.dumps(cfg["langs"])))
+                       .replace("__SOURCE__", cfg["source_lang"]).replace("__LANGS__", json.dumps(cfg["langs"]))
+                       .replace("__THEMES__", json.dumps(TK.theme_ids(cfg))))
 
 
 # --------------------------------------------------------------------------- design.md
@@ -198,6 +220,16 @@ def design_md(cfg: dict, secs: list[tuple]) -> str:
 
 
 # --------------------------------------------------------------------------- assembly
+def _bridge(cfg: dict) -> str:
+    css = TK.bridge_css(cfg)
+    return "\n/* extra themes: logo swap and Hairline highlight, as base.css does for light and dark */\n" + css + "\n" if css else ""
+
+
+def extra_theme_markers(cfg: dict) -> dict[str, str]:
+    """{{SLOTS_<ID>}} and {{CONTRAST_<ID>}} for the themes beyond light and dark (ids with digits: use THEME_CARDS)."""
+    return {k: v for k, v in TK.theme_marker_values(cfg).items() if MARKER.fullmatch("{{%s}}" % k)}
+
+
 def page_markers(cfg: dict, project: Path, secs: list[tuple], md: str) -> dict[str, str]:
     top, side = navs(project, secs)
     css = TK.tokens_css(cfg)
@@ -205,17 +237,18 @@ def page_markers(cfg: dict, project: Path, secs: list[tuple], md: str) -> dict[s
         "LANG": cfg["source_lang"], "NAME": html.escape(cfg["name"]), "VERSION": html.escape(str(cfg.get("version", "1.0"))),
         "DATE": html.escape(cfg.get("date", "")), "DESCRIPTION": html.escape(cfg.get("summary", "")),
         "HEAD_JS": head_js(cfg), "FONT_FACES": font_faces(cfg), "TOKENS_CSS": css,
-        "BASE_CSS": read(ASSETS / "base.css"), "ICON_MOTION_CSS": read(ASSETS / "icon-motion.css"),
+        "BASE_CSS": read(ASSETS / "base.css") + _bridge(cfg), "ICON_MOTION_CSS": read(ASSETS / "icon-motion.css"),
         "PARTS_CSS": "\n".join(s[3] for s in secs), "PARTS_JS": script_safe("\n;\n".join(s[4] for s in secs if s[4].strip())),
         "LOGO_LIGHT": logo(project, cfg, "light"), "LOGO_DARK": logo(project, cfg, "dark"),
         "TOPNAV": top, "SIDENAV": side, "LANG_SWITCH": lang_switch(cfg),
         "UI_CONTENTS": ui(cfg, "contents"), "UI_TOGGLE": ui(cfg, "toggle"), "UI_LIGHT": ui(cfg, "light"),
-        "UI_DOWNLOAD": ui(cfg, "download"), "UI_TOP": ui(cfg, "top"),
+        "UI_DOWNLOAD": ui(cfg, "download"), "UI_TOP": ui(cfg, "top"), "THEME_CONTROL": theme_control(cfg),
+        "THEME_COUNT": str(len(TK.theme_ids(cfg))), "THEME_CARDS": TK.theme_cards(cfg), "CONTRAST_TABLES": TK.contrast_tables(cfg),
         "HAIRLINE": hairline_scripts(project, cfg), "RUNTIME_JS": runtime_js(cfg, project),
         "TOKENS_PRE": html.escape(css), "DESIGN_MD_PRE": html.escape(md),
         "SWATCHES": TK.swatches(cfg), "SLOTS_LIGHT": TK.slots(cfg, "light"), "SLOTS_DARK": TK.slots(cfg, "dark"),
         "CONTRAST_LIGHT": TK.contrast_rows(cfg, "light"), "CONTRAST_DARK": TK.contrast_rows(cfg, "dark"),
-        "CHART_SWATCHES": TK.chart_swatches(cfg), "ICON_GRID": icon_grid(project),
+        "CHART_SWATCHES": TK.chart_swatches(cfg), "ICON_GRID": icon_grid(project), **extra_theme_markers(cfg),
         **{k.upper().replace("-", "_") + "_URI": SP.data_uri(v) for k, v in SP.all_svgs(project, cfg).items()},
     }
 

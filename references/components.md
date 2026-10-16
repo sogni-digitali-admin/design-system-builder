@@ -40,3 +40,33 @@
 7. Run `palette_check.py`; then look at the chart in both themes.
 Charts in the page are hand-written SVG (no CDN): keep a small helper in the charts part (`bars`, `line`, `donut`)
 that other parts can call, and document its API in the part's `.md`.
+
+## Context switcher
+A control that sets the context of the whole page (destination, island, branch, workspace).
+- `role="radiogroup"` with a label; options `role="radio"` + `aria-checked`; roving `tabindex` (only the checked
+  one is 0); arrows move and select, Home/End jump, Space selects.
+- **Compact bar** variant (top of page or app bar): label + options as chips, each with a mini outline (24 px
+  icon or silhouette). **Large card** variant (first visit, settings): one card per option with picture, name and
+  one sentence.
+- States: default, hover, focus, checked, disabled (with the reason), loading (spinner, options kept in place).
+- **One shared value**: a single store and an event on change (`ctx:change`, detail = value); every section
+  listens and re-renders. Persist it (`localStorage` in try/catch) and state the default value in the section.
+
+## Spacing audit
+Run it on every section before hand-over; fix with tokens, never with ad-hoc pixels.
+- Scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 72.
+- Section: h2 → lead 12; lead → first block 24; h3 40 above, 12 below; blocks of one sub-part 16–24 apart.
+- Card padding 16 on mobile, 24 on desktop; card title → text 6–8; content never touches an edge.
+- Grid gaps: 16 between cards, 12 between chips and buttons, 8 icon → label. Cards in one row have equal height
+  and footers aligned at the bottom (`align-items: stretch`, footer `margin-top: auto`).
+- Forms: label → field 6–8, field → help 6, between fields 16, between groups 24. Buttons ≥ 44 tall.
+- Check at 390, 768, 1024, 1280 and 1440 px, light and dark, with screenshots you actually open.
+- List defects (file, selector, before → after), fix, rebuild, re-shoot; two passes at most.
+- Never change a text while fixing spacing (translations are keyed on it) and never change a colour.
+
+## Accent script face
+- One use per screen, ≥ 24 px, taglines and short flourishes only; never body text, labels or buttons.
+- Self-host an OFL font and record the licence in Notes.
+- If the brand's own script has an unclear licence, substitute an OFL one (Kaushan Script was the replacement
+  chosen on one project) and flag the substitution to the brand owner.
+- Fallback stack ends in `cursive`; check legibility at the smallest size used.

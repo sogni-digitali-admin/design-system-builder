@@ -5,11 +5,14 @@ Semantic colours in ds.config.json may name a primitive ("brand-700") or give a 
 from __future__ import annotations
 
 import html
+import re
 
 REQUIRED = ("bg", "surface", "text", "text-muted", "primary", "on-primary", "primary-hover",
             "accent", "border", "focus", "success", "warning", "danger", "info")
 STATUS = ("success", "warning", "danger", "info")
-SOFT_MIX = {"light": 0.12, "dark": 0.20}  # share of the status colour in its pale background
+SOFT_MIX = {"light": 0.12, "dark": 0.20}  # share of the status colour in its pale background, by base
+BASES = ("light", "dark")
+META = ("base", "note")  # keys of a theme block that are not colours
 
 DEFAULTS = {
     "radius": {"sm": "8px", "md": "12px", "lg": "20px", "full": "999px"},
@@ -26,31 +29,31 @@ UI = {
            "toggle": "Switch light / dark", "download": "Download design.md", "top": "top of page",
            "on": "on", "page": "page background", "surface": "card surface", "text": "Text", "muted": "Muted text",
            "primary": "Primary", "button": "Button text on primary", "accent": "Accent", "soft": "on its pale background",
-           "aaa": "AAA", "aa": "AA", "large": "Large text / graphics", "deco": "Decorative only", "copy": "Copy"},
+           "aaa": "AAA", "aa": "AA", "large": "Large text / graphics", "deco": "Decorative only", "copy": "Copy", "auto": "Auto", "theme": "Theme", "col_colour": "Colour", "col_on": "On", "col_ratio": "Ratio", "col_use": "Use"},
     "fr": {"language": "Langue", "light": "Clair", "dark": "Sombre", "copied": "Copié", "contents": "Sommaire",
            "toggle": "Basculer clair / sombre", "download": "Télécharger design.md", "top": "haut de page",
            "on": "sur", "page": "fond de page", "surface": "surface des cartes", "text": "Texte", "muted": "Texte atténué",
            "primary": "Couleur principale", "button": "Texte de bouton sur couleur principale", "accent": "Accent",
            "soft": "sur son fond pâle", "aaa": "AAA", "aa": "AA", "large": "Grand texte / graphisme",
-           "deco": "Décoratif seulement", "copy": "Copier"},
+           "deco": "Décoratif seulement", "copy": "Copier", "auto": "Auto", "theme": "Thème", "col_colour": "Couleur", "col_on": "Sur", "col_ratio": "Ratio", "col_use": "Usage"},
     "it": {"language": "Lingua", "light": "Chiaro", "dark": "Scuro", "copied": "Copiato", "contents": "Indice",
            "toggle": "Passa a chiaro / scuro", "download": "Scarica design.md", "top": "inizio pagina",
            "on": "su", "page": "sfondo pagina", "surface": "superficie delle card", "text": "Testo", "muted": "Testo attenuato",
            "primary": "Colore principale", "button": "Testo del pulsante sul colore principale", "accent": "Accento",
            "soft": "sul suo fondo chiaro", "aaa": "AAA", "aa": "AA", "large": "Testo grande / grafica",
-           "deco": "Solo decorativo", "copy": "Copia"},
+           "deco": "Solo decorativo", "copy": "Copia", "auto": "Auto", "theme": "Tema", "col_colour": "Colore", "col_on": "Su", "col_ratio": "Rapporto", "col_use": "Uso"},
     "es": {"language": "Idioma", "light": "Claro", "dark": "Oscuro", "copied": "Copiado", "contents": "Índice",
            "toggle": "Cambiar claro / oscuro", "download": "Descargar design.md", "top": "inicio de página",
            "on": "sobre", "page": "fondo de página", "surface": "superficie de tarjetas", "text": "Texto", "muted": "Texto atenuado",
            "primary": "Color principal", "button": "Texto de botón sobre color principal", "accent": "Acento",
            "soft": "sobre su fondo claro", "aaa": "AAA", "aa": "AA", "large": "Texto grande / gráficos",
-           "deco": "Solo decorativo", "copy": "Copiar"},
+           "deco": "Solo decorativo", "copy": "Copiar", "auto": "Auto", "theme": "Tema", "col_colour": "Color", "col_on": "Sobre", "col_ratio": "Proporción", "col_use": "Uso"},
     "de": {"language": "Sprache", "light": "Hell", "dark": "Dunkel", "copied": "Kopiert", "contents": "Inhalt",
            "toggle": "Hell / dunkel umschalten", "download": "design.md herunterladen", "top": "Seitenanfang",
            "on": "auf", "page": "Seitenhintergrund", "surface": "Kartenfläche", "text": "Text", "muted": "Gedämpfter Text",
            "primary": "Primärfarbe", "button": "Buttontext auf Primärfarbe", "accent": "Akzent",
            "soft": "auf seinem hellen Grund", "aaa": "AAA", "aa": "AA", "large": "Großer Text / Grafik",
-           "deco": "Nur dekorativ", "copy": "Kopieren"},
+           "deco": "Nur dekorativ", "copy": "Kopieren", "auto": "Auto", "theme": "Farbschema", "col_colour": "Farbe", "col_on": "Auf", "col_ratio": "Verhältnis", "col_use": "Verwendung"},
 }
 
 
@@ -103,6 +106,42 @@ def primitives(cfg: dict) -> dict[str, str]:
     return {p["name"]: p["hex"] for p in cfg.get("primitives", [])}
 
 
+def theme_ids(cfg: dict) -> list[str]:
+    """light, dark, then every other theme of ds.config.json in the order written."""
+    ids = [t for t in BASES if t in cfg["themes"]] + [t for t in cfg["themes"] if t not in BASES]
+    bad = [t for t in ids if not re.fullmatch(r"[a-z][a-z0-9-]*", t)]
+    if bad:
+        raise SystemExit("theme ids are lowercase letters, digits and dashes: %s" % ", ".join(bad))
+    return ids
+
+
+def extra_themes(cfg: dict) -> list[str]:
+    return [t for t in theme_ids(cfg) if t not in BASES]
+
+
+def base_of(cfg: dict, theme: str) -> str:
+    """"light" or "dark": what an extra theme is built on (colour-scheme, shadows, soft mixes, a11y variants)."""
+    if theme in BASES:
+        return theme
+    raw = cfg["themes"][theme]
+    if raw.get("base") in BASES:
+        return raw["base"]
+    if raw.get("base"):
+        raise SystemExit("themes.%s.base must be \"light\" or \"dark\"" % theme)
+    bg = primitives(cfg).get(raw.get("bg", ""), raw.get("bg", "#FFFFFF"))
+    return "dark" if luminance(bg) < 0.5 else "light"
+
+
+def theme_label(cfg: dict, theme: str, lang: str) -> str:
+    """Name shown in the picker and the tables: theme_names (a string or one string per language), else the UI string."""
+    names = cfg.get("theme_names", {}).get(theme)
+    if isinstance(names, dict):
+        return names.get(lang) or names.get(cfg["source_lang"]) or theme.capitalize()
+    if names:
+        return names
+    return ui_text(lang, theme) if theme in BASES else theme.replace("-", " ").capitalize()
+
+
 def resolve(cfg: dict, theme: str) -> dict[str, str]:
     """Semantic colours of one theme as hex, with the pale status backgrounds added."""
     prim = primitives(cfg)
@@ -110,9 +149,9 @@ def resolve(cfg: dict, theme: str) -> dict[str, str]:
     missing = [k for k in REQUIRED if k not in raw]
     if missing:
         raise SystemExit("themes.%s is missing %s" % (theme, ", ".join(missing)))
-    out = {k: prim.get(v, v) for k, v in raw.items()}
+    out = {k: prim.get(v, v) for k, v in raw.items() if k not in META}
     for key in STATUS:
-        out.setdefault(key + "-soft", mix(out[key], out["bg"], SOFT_MIX[theme]))
+        out.setdefault(key + "-soft", mix(out[key], out["bg"], SOFT_MIX[base_of(cfg, theme)]))
     return out
 
 
@@ -126,16 +165,28 @@ def ref(cfg: dict, value: str) -> str:
 
 # --------------------------------------------------------------------------- CSS
 def _theme_css(cfg: dict, theme: str, selector: str) -> list[str]:
-    raw, res = cfg["themes"][theme], resolve(cfg, theme)
+    raw, res, base = cfg["themes"][theme], resolve(cfg, theme), base_of(cfg, theme)
     lines = ["%s {" % selector]
     lines += ["  --color-%s: %s;" % (k, ref(cfg, raw.get(k, v))) for k, v in res.items()]
     lines.append("  --gradient-bg: %s;" % cfg.get("gradient", {}).get(theme, "none"))
     lines += ["  --chart-%d: %s;" % (i + 1, c) for i, c in enumerate(cfg.get("chart", {}).get(theme, []))]
     shadow = cfg.get("shadow", {}).get(theme) or (
-        "0 1px 2px rgb(0 0 0 / .06), 0 10px 28px rgb(0 0 0 / .08)" if theme == "light"
+        "0 1px 2px rgb(0 0 0 / .06), 0 10px 28px rgb(0 0 0 / .08)" if base == "light"
         else "0 1px 2px rgb(0 0 0 / .4), 0 12px 32px rgb(0 0 0 / .45)")
-    lines += ["  --shadow-card: %s;" % shadow, "  color-scheme: %s;" % theme, "}"]
+    lines.append("  --shadow-card: %s;" % shadow)
+    lines += ["  color-scheme: %s;" % base, "}"]
     return lines
+
+
+def bridge_css(cfg: dict) -> str:
+    """What base.css gives [data-theme=light|dark] (logo and icon swap, Hairline highlight), for the other themes.
+    Placed after base.css, whose :root rules would otherwise win on order."""
+    out = []
+    for theme in extra_themes(cfg):
+        dark = base_of(cfg, theme) == "dark"
+        out.append('[data-theme="%s"] { --show-light: %s; --show-dark: %s;%s }' % (
+            theme, "none" if dark else "block", "block" if dark else "none", " --hairline-hi: var(--color-text);" if dark else ""))
+    return "\n".join(out)
 
 
 def tokens_css(cfg: dict) -> str:
@@ -152,6 +203,8 @@ def tokens_css(cfg: dict) -> str:
     out += ["  --motion-%s: %s;" % kv for kv in d["motion"].items()]
     out += ["}", "", "/* 2 · Semantic (per theme) */"]
     out += _theme_css(cfg, "light", ':root,\n[data-theme="light"]') + [""] + _theme_css(cfg, "dark", '[data-theme="dark"]')
+    for theme in extra_themes(cfg):
+        out += ["", "/* %s (base %s) */" % (theme, base_of(cfg, theme))] + _theme_css(cfg, theme, '[data-theme="%s"]' % theme)
     out += ["", "/* 3 · Component */", ":root,\n[data-theme] {",
             "  --button-bg: var(--color-primary); --button-bg-hover: var(--color-primary-hover); --button-fg: var(--color-on-primary);",
             "  --card-bg: var(--color-surface); --card-border: var(--color-border); --card-radius: var(--radius-lg);",
@@ -194,6 +247,29 @@ def slots(cfg: dict, theme: str) -> str:
     return "\n".join(out)
 
 
+def theme_cards(cfg: dict) -> str:
+    """One card per theme, each forcing its own theme, listing its slots."""
+    lang = cfg["source_lang"]
+    return "\n".join('<div class="card" data-theme="%s">\n  <span class="label">%s</span>\n  <ul class="slots">%s</ul>\n</div>'
+                     % (t, html.escape(theme_label(cfg, t, lang)), slots(cfg, t)) for t in theme_ids(cfg))
+
+
+def contrast_tables(cfg: dict) -> str:
+    lang = cfg["source_lang"]
+    head = "".join("<th>%s</th>" % html.escape(ui_text(lang, k)) for k in ("col_colour", "col_on", "col_ratio", "col_use"))
+    return "\n".join('<div class="tbl"><table><thead><tr><th>%s</th>%s</tr></thead><tbody>%s</tbody></table></div>'
+                     % (html.escape(theme_label(cfg, t, lang)), head, contrast_rows(cfg, t)) for t in theme_ids(cfg))
+
+
+def theme_marker_values(cfg: dict) -> dict[str, str]:
+    """SLOTS_<ID> and CONTRAST_<ID> for every theme (light and dark keep their historical markers)."""
+    out = {}
+    for t in theme_ids(cfg):
+        key = t.upper().replace("-", "_")
+        out["SLOTS_" + key], out["CONTRAST_" + key] = slots(cfg, t), contrast_rows(cfg, t)
+    return out
+
+
 def swatches(cfg: dict) -> str:
     copy = ui_text(cfg["source_lang"], "copy")
     return "\n".join(
@@ -205,18 +281,24 @@ def swatches(cfg: dict) -> str:
 
 def chart_swatches(cfg: dict) -> str:
     out = []
-    for theme in ("light", "dark"):
-        dots = "".join('<span class="dot" style="background:%s" title="%s"></span>' % (c, c) for c in cfg.get("chart", {}).get(theme, []))
-        out.append('<div class="chart-row" data-theme="%s"><span class="label">%s</span>%s</div>' % (theme, ui_text(cfg["source_lang"], theme), dots))
+    for theme in theme_ids(cfg):
+        colors = cfg.get("chart", {}).get(theme, [])
+        if not colors and theme not in BASES:
+            continue
+        dots = "".join('<span class="dot" style="background:%s" title="%s"></span>' % (c, c) for c in colors)
+        out.append('<div class="chart-row" data-theme="%s"><span class="label">%s</span>%s</div>'
+                   % (theme, html.escape(theme_label(cfg, theme, cfg["source_lang"])), dots))
     return "\n".join(out)
 
 
 # --------------------------------------------------------------------------- design.md
 def design_md_tokens(cfg: dict) -> str:
     out = []
-    for theme in ("light", "dark"):
+    for theme in theme_ids(cfg):
         t = resolve(cfg, theme)
         out.append("## Colors — %s" % theme)
+        if theme not in BASES:
+            out.append("base: %s" % base_of(cfg, theme))
         out += ["%s: %s" % (k, v) for k, v in t.items() if k not in STATUS and not k.endswith("-soft")]
         if cfg.get("gradient", {}).get(theme):
             out.append("gradient-bg: %s" % cfg["gradient"][theme])
@@ -225,9 +307,10 @@ def design_md_tokens(cfg: dict) -> str:
         out.append("")
     chart = cfg.get("chart", {})
     if chart:
-        out += ["## Charts", "categorical-light: %s" % ", ".join(chart.get("light", [])),
-                "categorical-dark: %s" % ", ".join(chart.get("dark", [])),
-                "rule: assign in fixed order, never cycle; one y-axis only; status colours never used as series", ""]
+        out += ["## Charts"] + ["categorical-%s: %s" % (t, ", ".join(chart.get(t, []))) for t in theme_ids(cfg) if t in BASES or chart.get(t)]
+        out += ["rule: assign in fixed order, never cycle; one y-axis only; status colours never used as series", ""]
+    for theme in extra_themes(cfg):
+        out += ["## Contrast — %s" % theme] + ["%s: %s" % (k.removeprefix("color-"), v) for k, v in contrast_tokens(cfg, theme).items()] + [""]
     fonts = cfg.get("fonts", {})
     out += ["## Type", "heading: %s" % fonts.get("heading", "system-ui"), "body: %s" % fonts.get("body", "system-ui"), ""]
     return "\n".join(out)
@@ -262,10 +345,10 @@ def push(color: str, toward: str, against: list[str], target: float) -> str:
 
 def contrast_tokens(cfg: dict, theme: str) -> dict[str, str]:
     """Stronger text, borders and primary for "Contraste élevé": AAA (7:1) for text where the palette allows."""
-    t = resolve(cfg, theme)
-    way = "black" if theme == "light" else "white"
-    bg = t["bg"] if theme == "light" else mix("#000000", t["bg"], 0.35)
-    surface = t["surface"] if theme == "light" else mix("#000000", t["surface"], 0.25)
+    t, base = resolve(cfg, theme), base_of(cfg, theme)
+    way = "black" if base == "light" else "white"
+    bg = t["bg"] if base == "light" else mix("#000000", t["bg"], 0.35)
+    surface = t["surface"] if base == "light" else mix("#000000", t["surface"], 0.25)
     text = push(t["text"], way, [bg, surface], 12)
     muted = push(t["text-muted"], way, [bg, surface], 7)
     border = push(t["border"], way, [bg, surface], 3)
@@ -274,22 +357,30 @@ def contrast_tokens(cfg: dict, theme: str) -> dict[str, str]:
     out = {"color-text": text, "color-text-muted": muted, "color-border": border, "card-border": border,
            "color-primary": primary, "color-primary-hover": push(primary, way, [bg], 9), "button-bg": primary,
            "color-on-primary": on_primary, "input-border": primary, "color-focus": text, "color-accent": primary}
-    if theme == "dark":
+    if base == "dark":
         out.update({"color-bg": bg, "color-surface": surface, "gradient-bg": "none"})
     return out
 
 
 def a11y_css(cfg: dict) -> str:
-    """CSS the accessibility panel injects: high contrast and colour-vision palettes for both themes."""
-    dark = 'html.dark,html[data-theme="dark"]'
+    """CSS the accessibility panel injects: high contrast and colour-vision palettes for every theme.
+    Extra themes add [data-theme=id] (one more attribute than light's rule) so they win over the light variants."""
     decl = lambda d: ";".join("--%s:%s" % kv for kv in d.items())
+    extras = extra_themes(cfg)
     css = ["html[data-a11y-contrast=more]{%s}" % decl(contrast_tokens(cfg, "light")),
            "html[data-a11y-contrast=more].dark,html[data-a11y-contrast=more][data-theme=dark]{%s}" % decl(contrast_tokens(cfg, "dark"))]
+    css += ['html[data-a11y-contrast=more][data-theme="%s"]{%s}' % (t, decl(contrast_tokens(cfg, t))) for t in extras]
     n = max(len(cfg.get("chart", {}).get("light", [])), 6)
     for kind, pal in CVD.items():
-        for theme in ("light", "dark"):
-            vals = {"chart-%d" % (i + 1): pal[theme][i % len(pal[theme])] for i in range(n)}
-            vals.update({"color-" + k: v for k, v in pal["status"][theme].items()})
-            sel = "html[data-a11y-cvd=%s]" % kind if theme == "light" else "html[data-a11y-cvd=%s].dark,html[data-a11y-cvd=%s][data-theme=dark]" % (kind, kind)
+        for theme in ("light", "dark", *extras):
+            base = base_of(cfg, theme)
+            vals = {"chart-%d" % (i + 1): pal[base][i % len(pal[base])] for i in range(n)}
+            vals.update({"color-" + k: v for k, v in pal["status"][base].items()})
+            if theme == "light":
+                sel = "html[data-a11y-cvd=%s]" % kind
+            elif theme == "dark":
+                sel = "html[data-a11y-cvd=%s].dark,html[data-a11y-cvd=%s][data-theme=dark]" % (kind, kind)
+            else:
+                sel = 'html[data-a11y-cvd=%s][data-theme="%s"]' % (kind, theme)
             css.append("%s{%s}" % (sel, decl(vals)))
     return "".join(css)

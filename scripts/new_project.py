@@ -1,8 +1,10 @@
 """Create a design system project folder with a working starter (builds and passes QA before any brand work).
 
     python new_project.py <dir> --name "Acme" [--slug acme] [--type crm] [--langs fr,en] [--source fr]
+                          [--themes light,dark,brand[:dark|:light]]
 
-Creates ds.config.json (placeholder neutral palette, the core sections in order), parts/ (the starter sections,
+Creates ds.config.json (placeholder neutral palette, the core sections in order; each theme after light and dark
+is a block copied from dark or light, with a TODO note, so the page offers a theme picker), parts/ (the starter sections,
 written in English: rewrite their visible text in the source language), i18n/glossary.md, icons/,
 hairline/figures/, notes/. Never overwrites an existing project.
 """
@@ -62,8 +64,26 @@ PLACEHOLDER = {
 }
 
 
-def config(name: str, slug: str, kind: str, langs: list[str], source: str) -> dict:
-    return {
+def extra_themes(spec: str) -> dict:
+    """`--themes light,dark,brand:light` -> {"themes": {...}, "chart": {...}, "theme_names": {...}} for the themes after light and dark."""
+    out = {"themes": {}, "chart": {}, "theme_names": {}}
+    for item in (x.strip().lower() for x in spec.split(",") if x.strip()):
+        theme, _, base = item.partition(":")
+        if theme in ("light", "dark"):
+            continue
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", theme) or base not in ("", "light", "dark"):
+            sys.exit("--themes: '%s' is not an id (lowercase letters, digits, dashes) optionally followed by :light or :dark" % item)
+        base = base or "dark"
+        out["themes"][theme] = {**PLACEHOLDER["themes"][base], "base": base,
+                                "note": "TODO: values copied from %s; design this theme (do not just invert), then run palette_check.py" % base}
+        out["chart"][theme] = list(PLACEHOLDER["chart"][base])
+        out["theme_names"][theme] = theme.replace("-", " ").capitalize()
+    return out
+
+
+def config(name: str, slug: str, kind: str, langs: list[str], source: str, themes: str = "") -> dict:
+    extra = extra_themes(themes)
+    cfg = {
         "name": name, "slug": slug, "product_type": kind, "version": "0.1",
         "date": datetime.date.today().isoformat(), "source_lang": source, "langs": langs,
         "summary": "", "default_theme": "both", "logo": {"light": "", "dark": "", "mark": ""},
@@ -71,6 +91,11 @@ def config(name: str, slug: str, kind: str, langs: list[str], source: str) -> di
         "hairline": {"enabled": True},
         "sections": [{"id": i, "title": t, "part": p, "icon": ic, "motion": m} for i, t, p, ic, m in CORE],
     }
+    if extra["themes"]:
+        cfg["themes"] = {**cfg["themes"], **extra["themes"]}
+        cfg["chart"] = {**cfg["chart"], **extra["chart"]}
+        cfg["theme_names"] = extra["theme_names"]
+    return cfg
 
 
 def main() -> None:
@@ -81,6 +106,7 @@ def main() -> None:
     ap.add_argument("--type", default="other", help="crm, saas, website, ecommerce, booking, mobile-app, other")
     ap.add_argument("--langs", default="en")
     ap.add_argument("--source")
+    ap.add_argument("--themes", default="", help="light,dark plus extra themes, e.g. light,dark,brand or light,dark,brand:light")
     a = ap.parse_args()
     project = Path(a.dir).resolve()
     if (project / "ds.config.json").exists():
@@ -88,12 +114,12 @@ def main() -> None:
     langs = [x.strip().lower() for x in a.langs.split(",") if x.strip()]
     source = (a.source or langs[0]).lower()
     slug = a.slug or re.sub(r"[^a-z0-9]+", "-", a.name.lower()).strip("-")
+    cfg = config(a.name, slug, a.type, langs if source in langs else [source] + langs, source, a.themes)  # validates --themes before writing
     for sub in ("parts", "icons", "i18n", "hairline/figures", "notes", "assets"):
         (project / sub).mkdir(parents=True, exist_ok=True)
     for f in STARTER.glob("*.*"):
         shutil.copy2(f, project / "parts" / f.name)
     shutil.copy2(SKILL / "assets" / "glossary_template.md", project / "i18n" / "glossary.md")
-    cfg = config(a.name, slug, a.type, langs if source in langs else [source] + langs, source)
     (project / "ds.config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("created %s" % project)
     print("next:\n  python %s/scripts/fetch_icons.py get \"%s\" lucide %s"

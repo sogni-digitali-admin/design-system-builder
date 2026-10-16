@@ -12,15 +12,33 @@ const cmd = args[1] && !args[1].startsWith("--") ? args[1] : "all";
 const cfg = JSON.parse(readFileSync(join(project, "ds.config.json"), "utf8"));
 const file = join(project, "dist", opt("--file", "design.html"));
 const base = { slug: cfg.slug, lang: cfg.source_lang };
+const THEMES = Object.keys(cfg.themes); // light, dark and any extra theme: each is opened and checked
 let failed = false;
 const fail = (msg) => { failed = true; console.log("  FAIL " + msg); };
 
+// A theme with no CSS falls back to light without an error: its colours must differ from every other theme's.
+async function themeSignature(page) {
+  return page.evaluate(() => {
+    const cs = getComputedStyle(document.documentElement);
+    return { attr: document.documentElement.getAttribute("data-theme"), sig: ["bg", "surface", "text", "primary"].map((k) => cs.getPropertyValue("--color-" + k).trim()).join("|") };
+  });
+}
+
 async function checkConsole(b) {
-  console.log("\n# console and page errors (both themes, every language)");
-  for (const theme of ["light", "dark"]) {
+  console.log("\n# console and page errors (every theme, every language)");
+  const seen = {};
+  for (const theme of THEMES) {
     const { page, errors } = await openPage(b, file, { ...base, theme });
+    const { attr, sig } = await themeSignature(page);
+    if (attr !== theme) fail(`${theme}: the page opened with data-theme="${attr}"`);
+    if (seen[sig]) {
+      const msg = `${theme}: same colours as ${seen[sig]}`;
+      if (/^TODO/.test(cfg.themes[theme].note || "")) console.log(`  WARN ${msg} (still the scaffold copy: design it)`);
+      else fail(`${msg} (no CSS for this theme?)`);
+    }
+    seen[sig] = theme;
     await scrollThrough(page);
-    await page.click("#theme-toggle").catch(() => {});
+    await page.click("#theme-toggle, #theme-picker button:last-child").catch(() => {});
     for (const l of cfg.langs) await page.evaluate((x) => window.DSLang && window.DSLang.set(x), l);
     await page.waitForTimeout(500);
     errors.forEach((e) => fail(`${theme}: ${e.slice(0, 240)}`));
@@ -45,7 +63,7 @@ async function checkRequests(b) {
 
 async function checkMobile(b) {
   console.log("\n# phone width 390 px: no sideways page scroll");
-  for (const theme of ["light", "dark"]) {
+  for (const theme of THEMES) {
     const { page } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
     await scrollThrough(page);
     const r = await page.evaluate(() => {
@@ -102,8 +120,8 @@ async function checkI18n(b) {
 }
 
 async function checkA11y(b) {
-  console.log("\n# accessibility panel: 200 % text at 390 px (both themes), Alt+A opens, Esc closes and returns focus");
-  for (const theme of ["light", "dark"]) {
+  console.log("\n# accessibility panel: 200 % text at 390 px (every theme), Alt+A opens, Esc closes and returns focus");
+  for (const theme of THEMES) {
     const { page, errors } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
     const has = await page.evaluate(() => !!(window.DSA11y && window.DSA11y.element));
     if (!has) { console.log("  skip: no <ds-a11y> on the page"); await page.close(); return; }
@@ -138,7 +156,7 @@ async function shots(b) {
   mkdirSync(out, { recursive: true });
   const ids = opt("--section") ? [opt("--section")] : cfg.sections.map((s) => s.id);
   const langs = opt("--lang") === "all" ? cfg.langs : [opt("--lang", cfg.source_lang)];
-  for (const [w, h] of [[1360, 1000], [390, 844]]) for (const theme of ["light", "dark"]) for (const lang of langs) {
+  for (const [w, h] of [[1360, 1000], [390, 844]]) for (const theme of THEMES) for (const lang of langs) {
     const { page } = await openPage(b, file, { ...base, theme, lang, width: w, height: h });
     for (const id of ids) {
       const el = await page.$("#" + id);

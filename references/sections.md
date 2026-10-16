@@ -35,6 +35,13 @@ needs them. Each entry says what it must contain to be "done". Order in `ds.conf
 | emails | transactional + client templates + signatures | `references/emails.md` |
 | mobile | phone views, bottom bar, "More" sheet, PWA | `references/mobile-pwa.md` |
 | widgets | small header widgets (clock, status, search) with several designs | variants side by side, one default |
+| wearables | a watch app, wrist ticket/QR, voice assistant or crew watch | `references/wearables.md` |
+| auth | any product with accounts (customer + staff sign-in, 2FA, pairing) | `references/auth.md` |
+| notifications | more than occasional toasts: intents, stack, live activity, one JS API | `references/notifications.md` |
+| loyalty | points, tiers, rewards, referral | `references/modules/loyalty.md` |
+| portals | customer portal plus partner, crew and B2B spaces around a booking/service business | `references/modules/portals.md` |
+| search | catalogue search with a classic ↔ AI free-text mode | `references/search.md` |
+| imagery | the product shows photos or avatars (registry, credits, licences) | `references/imagery.md` |
 
 ## Screen sections: the shape that works
 For each product area (e.g. "Products"): an in-section summary (chips linking to sub-parts), then

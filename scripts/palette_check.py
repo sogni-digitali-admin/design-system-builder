@@ -7,7 +7,8 @@ Chart checks, per theme, on each pair of neighbouring colours (series are assign
   - normal vision ΔE (OKLab ×100) ≥ 15            below: FAIL, two series look the same to everyone
   - protan / deutan / tritan simulated ΔE ≥ 8      6–8: WARN (needs a second cue: labels, texture); < 6: FAIL
   - contrast of each colour on the surface ≥ 3:1   below: WARN (marks need a visible label or a table view)
-Text checks: the pairs listed in references/tokens-and-color.md, AA = 4.5:1 for text, 3:1 for large text and UI.
+Text checks: the pairs listed in references/tokens-and-color.md, AA = 4.5:1 for text, 3:1 for the focus ring.
+Every theme of ds.config.json is checked (light, dark and any extra one); an extra theme's `base` must agree with its background.
 Exit code 1 when anything FAILs.
 """
 from __future__ import annotations
@@ -78,9 +79,13 @@ def check_chart(colors: list[str], surface: str, label: str) -> int:
 
 def check_text(cfg: dict) -> int:
     fails = 0
-    for theme in ("light", "dark"):
-        t = TK.resolve(cfg, theme)
-        print("\nText contrast · %s" % theme)
+    for theme in TK.theme_ids(cfg):
+        t, base = TK.resolve(cfg, theme), TK.base_of(cfg, theme)
+        print("\nText contrast · %s%s" % (theme, "" if theme in TK.BASES else " (base %s)" % base))
+        if theme not in TK.BASES and (TK.luminance(t["bg"]) < 0.5) != (base == "dark"):
+            fails += 1
+            print("  FAIL base is %s but the background %s is %s: shadows, soft mixes and accessibility variants would be wrong"
+                  % (base, t["bg"], "light" if base == "dark" else "dark"))
         pairs = [("text / bg", "text", "bg", 4.5), ("text / surface", "text", "surface", 4.5),
                  ("text-muted / bg", "text-muted", "bg", 4.5), ("text-muted / surface", "text-muted", "surface", 4.5),
                  ("primary / bg (links)", "primary", "bg", 4.5), ("on-primary / primary (buttons)", "on-primary", "primary", 4.5),
@@ -105,7 +110,7 @@ def main() -> None:
     elif a.project:
         cfg = json.loads((Path(a.project) / "ds.config.json").read_text(encoding="utf-8"))
         fails = check_text(cfg)
-        for theme in ("light", "dark"):
+        for theme in TK.theme_ids(cfg):
             colors = cfg.get("chart", {}).get(theme, [])
             if colors:
                 fails += check_chart(colors, TK.resolve(cfg, theme)["surface"], theme)

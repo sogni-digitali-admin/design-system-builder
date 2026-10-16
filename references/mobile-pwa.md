@@ -27,3 +27,23 @@ safe areas (`env(safe-area-inset-*)`), offline banner and queued actions, skelet
   (`dist/splash/splash-<theme>.svg`) — nothing flashes. iOS needs `apple-touch-icon` and status bar meta.
 - Install prompt: explain the benefit, after a meaningful action, never on first visit.
 - Generate the icons and the manifest in the part's JS or a small script; show them in the section with their sizes.
+
+## Splash family beyond the generated one
+The generated SVG splash (`dist/splash/`) is the baseline. Offer these as options when the brand wants more.
+- **Keep the original splash.** If the brand already has one, show it unchanged first; every variant below sits
+  under it as an option, labelled as a proposal.
+- **Desktop splash**: 16:9 in a browser frame (canvas 1440 × 900, scaled to fit), same mark and background as
+  the phone one.
+- **Layered scene splash**: sky, sun or moon, relief, three waves, foreground as separate groups with a slow drift;
+  a day and a night version that follow the theme. Keep the SVG light (~30 KB).
+- **Domain-typing splash**: the domain typed letter by letter in the brand colours, with a cursor; 100 ms per
+  character, 800 ms hold, fade out 700 ms. `role="status"` on the overlay with the full name in a hidden label
+  (`aria-label`) and the typed letters `aria-hidden`, so a screen reader never spells it out.
+- **Signature splash**: the animated emblem first, then the typed domain; at the end the cursor turns into a
+  wave underline.
+- **Loops as loaders**: reuse the animation in three states — normal (loops), slow (after ~8 s: calmer loop plus a
+  sentence), failure (stops, shows the error and a retry). Never an endless loop without the second state.
+- **Rules for all of them**: image-zero (inline SVG/CSS only, nothing to fetch, works offline and on first paint),
+  complete in ≤ 3 s, shown once per session (`sessionStorage` in try/catch), skippable by tap or key, never
+  blocks content that is already ready. Reduced motion: a static frame plus a fade, no typing, no drift.
+- **Replay button** under each splash in the design page, so reviewers can watch it again without clearing storage.
