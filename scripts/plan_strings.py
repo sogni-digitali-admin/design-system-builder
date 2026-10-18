@@ -1,0 +1,123 @@
+"""Chrome strings of the plan page (labels, buttons, messages) in fr, en, it, es, de. A missing key falls back to English."""
+from __future__ import annotations
+
+EN = {
+    "title": "Plan for the {name} design system", "intro": "Choose, edit or comment on each proposal, then export your answers and give the file back to Claude Code.",
+    "progress": "{n} / {m} topics decided", "accept_reco": "Accept the recommendations", "goto_export": "Export my answers", "jump": "Jump to a topic", "toc": "Topics",
+    "inputs_title": "What we understood from your files", "inputs_intro": "Each file you gave was read before any proposal. Correct what is wrong: your corrections come back with your answers.",
+    "inputs_corr": "Correct or complete this", "vector_yes": "vector (SVG)", "vector_no": "raster, not vector", "typefaces": "Typefaces", "implications": "What it implies", "uncertainties": "Not certain",
+    "kind_logo": "logo", "kind_brand-board": "brand board", "kind_ui-screenshot": "screenshot", "kind_photo": "photo", "kind_sketch": "sketch", "kind_competitor": "competitor", "kind_document": "document", "kind_other": "other",
+    "recommended": "Recommended", "always": "always included", "from_inputs": "Based on:", "other_title": "Other (write your own)", "other_multi": "Something else to add", "other_ph": "Describe what you want instead",
+    "notes_label": "Notes for this topic", "notes_ph": "Comments, constraints, anything Claude should know", "mark_decided": "Mark as decided", "reopen": "Reopen", "st_open": "To decide", "st_done": "Decided",
+    "locked_msg": "No splash: the logo is only provided as {format}. Provide the logo as SVG to get the splash and the loader.", "locked_short": "No splash (logo only as {format})",
+    "more_options": "Other options ({n})", "licence": "Licence", "contrast_title": "Computed contrast (WCAG)", "pass": "pass", "fail": "fail", "ok_count": "{n}/{m} pass",
+    "src_logo": "from the logo", "src_sheet": "from the brand sheet", "src_derived": "derived", "src_proposed": "proposed",
+    "font_heading": "Heading font", "font_body": "Body font", "font_accent": "Accent script font", "font_note": "Samples use the font if installed on your computer, otherwise a close system font.",
+    "st_text_surface": "Text on surface (worst background)", "st_button": "Button text on button",
+    "glass_rule": "Rules: solid fallback without backdrop-filter, with reduced transparency or high contrast; no text on raw blur; chrome and overlays only.",
+    "icons_names": "Icons to fetch (comma separated)", "icons_motion": "Animated icons (motion vocabulary)", "accent_style": "Accent style (optional)", "accent_none": "None", "surfaces": "Surfaces that use the accent style",
+    "surfaces_ph": "e.g. top bar and sheets", "summary_title": "Summary and export", "not_decided": "not decided yet", "none_chosen": "nothing selected", "other_prefix": "Other: ",
+    "export_title": "Export my answers", "export_intro": "Download the file, or copy it: the text below is always there. Give ds.plan.json to Claude Code (paste it in the chat or give the path).",
+    "dl": "Download ds.plan.json", "copy": "Copy to clipboard", "copied": "Copied.", "copy_failed": "Copy was blocked: select the text below and copy it by hand.", "dl_started": "Download started. If nothing happens (blocked here), copy the text below.",
+    "json_label": "ds.plan.json (read only)", "md_label": "Short summary (Markdown)", "import_title": "Import a previous export", "import_intro": "Paste a ds.plan.json to resume where you stopped.",
+    "import_ph": "Paste the JSON here", "import_btn": "Load", "import_ok": "Answers loaded.", "import_other": "Answers loaded, but they come from another version of the proposals: check them.", "import_bad": "This text is not a valid ds.plan.json.",
+    "questions_title": "Open questions", "answer_ph": "Your answer", "md_title": "Answers for {name}",
+}
+
+FR = {
+    "title": "Plan du design system {name}", "intro": "Choisissez, modifiez ou commentez chaque proposition, puis exportez vos réponses et rendez le fichier à Claude Code.",
+    "progress": "{n} / {m} sujets décidés", "accept_reco": "Accepter les recommandations", "goto_export": "Exporter mes réponses", "jump": "Aller à un sujet", "toc": "Sujets",
+    "inputs_title": "Ce que nous avons compris de vos fichiers", "inputs_intro": "Chaque fichier fourni a été lu avant toute proposition. Corrigez ce qui est faux : vos corrections reviennent avec vos réponses.",
+    "inputs_corr": "Corriger ou compléter", "vector_yes": "vectoriel (SVG)", "vector_no": "raster, pas vectoriel", "typefaces": "Polices", "implications": "Ce que cela implique", "uncertainties": "Incertain",
+    "kind_logo": "logo", "kind_brand-board": "planche de marque", "kind_ui-screenshot": "capture d'écran", "kind_photo": "photo", "kind_sketch": "croquis", "kind_competitor": "concurrent", "kind_document": "document", "kind_other": "autre",
+    "recommended": "Recommandé", "always": "toujours inclus", "from_inputs": "D'après :", "other_title": "Autre (écrire la vôtre)", "other_multi": "Autre chose à ajouter", "other_ph": "Décrivez ce que vous voulez à la place",
+    "notes_label": "Notes sur ce sujet", "notes_ph": "Commentaires, contraintes, tout ce que Claude doit savoir", "mark_decided": "Marquer comme décidé", "reopen": "Rouvrir", "st_open": "À décider", "st_done": "Décidé",
+    "locked_msg": "Pas de splash : le logo n'est fourni qu'en {format}. Fournissez le logo en SVG pour obtenir le splash et le chargeur.", "locked_short": "Pas de splash (logo seulement en {format})",
+    "more_options": "Autres options ({n})", "licence": "Licence", "contrast_title": "Contrastes calculés (WCAG)", "pass": "réussi", "fail": "échec", "ok_count": "{n}/{m} réussis",
+    "src_logo": "du logo", "src_sheet": "de la planche de marque", "src_derived": "dérivé", "src_proposed": "proposé",
+    "font_heading": "Police des titres", "font_body": "Police du texte", "font_accent": "Police d'accent (script)", "font_note": "Les aperçus utilisent la police si elle est installée sur votre ordinateur, sinon une police système proche.",
+    "st_text_surface": "Texte sur la surface (pire fond)", "st_button": "Texte du bouton sur le bouton",
+    "glass_rule": "Règles : repli opaque sans backdrop-filter, avec transparence réduite ou contraste élevé ; jamais de texte sur le flou brut ; barres et couches seulement.",
+    "icons_names": "Icônes à télécharger (séparées par des virgules)", "icons_motion": "Icônes animées (vocabulaire de mouvement)", "accent_style": "Style d'accent (facultatif)", "accent_none": "Aucun", "surfaces": "Surfaces qui utilisent le style d'accent",
+    "surfaces_ph": "par exemple barre du haut et feuilles", "summary_title": "Résumé et export", "not_decided": "pas encore décidé", "none_chosen": "rien de sélectionné", "other_prefix": "Autre : ",
+    "export_title": "Exporter mes réponses", "export_intro": "Téléchargez le fichier ou copiez-le : le texte ci-dessous est toujours là. Donnez ds.plan.json à Claude Code (collez-le dans la conversation ou indiquez le chemin).",
+    "dl": "Télécharger ds.plan.json", "copy": "Copier dans le presse-papiers", "copied": "Copié.", "copy_failed": "La copie est bloquée : sélectionnez le texte ci-dessous et copiez-le à la main.", "dl_started": "Téléchargement lancé. S'il ne se passe rien (bloqué ici), copiez le texte ci-dessous.",
+    "json_label": "ds.plan.json (lecture seule)", "md_label": "Résumé court (Markdown)", "import_title": "Importer un export précédent", "import_intro": "Collez un ds.plan.json pour reprendre là où vous vous êtes arrêté.",
+    "import_ph": "Collez le JSON ici", "import_btn": "Charger", "import_ok": "Réponses chargées.", "import_other": "Réponses chargées, mais elles viennent d'une autre version des propositions : vérifiez-les.", "import_bad": "Ce texte n'est pas un ds.plan.json valide.",
+    "questions_title": "Questions ouvertes", "answer_ph": "Votre réponse", "md_title": "Réponses pour {name}",
+}
+
+IT = {
+    "title": "Piano del design system {name}", "intro": "Scegliete, modificate o commentate ogni proposta, poi esportate le risposte e restituite il file a Claude Code.",
+    "progress": "{n} / {m} temi decisi", "accept_reco": "Accettare i consigli", "goto_export": "Esporta le mie risposte", "jump": "Vai a un tema", "toc": "Temi",
+    "inputs_title": "Cosa abbiamo capito dai vostri file", "inputs_intro": "Ogni file fornito è stato letto prima di qualsiasi proposta. Correggete ciò che è sbagliato: le correzioni tornano con le risposte.",
+    "inputs_corr": "Correggere o completare", "vector_yes": "vettoriale (SVG)", "vector_no": "raster, non vettoriale", "typefaces": "Caratteri", "implications": "Cosa implica", "uncertainties": "Incerto",
+    "kind_logo": "logo", "kind_brand-board": "tavola del marchio", "kind_ui-screenshot": "schermata", "kind_photo": "foto", "kind_sketch": "bozzetto", "kind_competitor": "concorrente", "kind_document": "documento", "kind_other": "altro",
+    "recommended": "Consigliato", "always": "sempre incluso", "from_inputs": "Da:", "other_title": "Altro (scrivete la vostra)", "other_multi": "Altro da aggiungere", "other_ph": "Descrivete cosa volete invece",
+    "notes_label": "Note su questo tema", "notes_ph": "Commenti, vincoli, tutto ciò che Claude deve sapere", "mark_decided": "Segna come deciso", "reopen": "Riapri", "st_open": "Da decidere", "st_done": "Deciso",
+    "locked_msg": "Nessuno splash: il logo è fornito solo in {format}. Fornite il logo in SVG per ottenere lo splash e il caricamento.", "locked_short": "Nessuno splash (logo solo in {format})",
+    "more_options": "Altre opzioni ({n})", "licence": "Licenza", "contrast_title": "Contrasti calcolati (WCAG)", "pass": "superato", "fail": "non superato", "ok_count": "{n}/{m} superati",
+    "src_logo": "dal logo", "src_sheet": "dalla tavola", "src_derived": "derivato", "src_proposed": "proposto",
+    "font_heading": "Carattere dei titoli", "font_body": "Carattere del testo", "font_accent": "Carattere corsivo di accento", "font_note": "Le anteprime usano il carattere se installato, altrimenti un carattere di sistema simile.",
+    "st_text_surface": "Testo sulla superficie (sfondo peggiore)", "st_button": "Testo del pulsante sul pulsante",
+    "glass_rule": "Regole: ripiego opaco senza backdrop-filter, con trasparenza ridotta o contrasto alto; mai testo sulla sfocatura grezza; solo barre e livelli sovrapposti.",
+    "icons_names": "Icone da scaricare (separate da virgole)", "icons_motion": "Icone animate (vocabolario di movimento)", "accent_style": "Stile di accento (facoltativo)", "accent_none": "Nessuno", "surfaces": "Superfici con lo stile di accento",
+    "surfaces_ph": "ad esempio barra superiore e fogli", "summary_title": "Riepilogo ed esportazione", "not_decided": "non ancora deciso", "none_chosen": "niente selezionato", "other_prefix": "Altro: ",
+    "export_title": "Esporta le mie risposte", "export_intro": "Scaricate il file o copiatelo: il testo qui sotto c'è sempre. Date ds.plan.json a Claude Code (incollatelo nella conversazione o indicate il percorso).",
+    "dl": "Scarica ds.plan.json", "copy": "Copia negli appunti", "copied": "Copiato.", "copy_failed": "La copia è bloccata: selezionate il testo qui sotto e copiatelo a mano.", "dl_started": "Download avviato. Se non succede nulla (bloccato qui), copiate il testo qui sotto.",
+    "json_label": "ds.plan.json (sola lettura)", "md_label": "Riepilogo breve (Markdown)", "import_title": "Importa un'esportazione precedente", "import_intro": "Incollate un ds.plan.json per riprendere da dove vi eravate fermati.",
+    "import_ph": "Incollate qui il JSON", "import_btn": "Carica", "import_ok": "Risposte caricate.", "import_other": "Risposte caricate, ma vengono da un'altra versione delle proposte: verificatele.", "import_bad": "Questo testo non è un ds.plan.json valido.",
+    "questions_title": "Domande aperte", "answer_ph": "La vostra risposta", "md_title": "Risposte per {name}",
+}
+
+ES = {
+    "title": "Plan del sistema de diseño {name}", "intro": "Elija, edite o comente cada propuesta, luego exporte sus respuestas y devuelva el archivo a Claude Code.",
+    "progress": "{n} / {m} temas decididos", "accept_reco": "Aceptar las recomendaciones", "goto_export": "Exportar mis respuestas", "jump": "Ir a un tema", "toc": "Temas",
+    "inputs_title": "Lo que entendimos de sus archivos", "inputs_intro": "Cada archivo se leyó antes de cualquier propuesta. Corrija lo que esté mal: sus correcciones vuelven con las respuestas.",
+    "inputs_corr": "Corregir o completar", "vector_yes": "vectorial (SVG)", "vector_no": "ráster, no vectorial", "typefaces": "Tipografías", "implications": "Qué implica", "uncertainties": "Incierto",
+    "kind_logo": "logotipo", "kind_brand-board": "tablero de marca", "kind_ui-screenshot": "captura", "kind_photo": "foto", "kind_sketch": "boceto", "kind_competitor": "competidor", "kind_document": "documento", "kind_other": "otro",
+    "recommended": "Recomendado", "always": "siempre incluido", "from_inputs": "Basado en:", "other_title": "Otro (escriba el suyo)", "other_multi": "Algo más que añadir", "other_ph": "Describa lo que quiere en su lugar",
+    "notes_label": "Notas sobre este tema", "notes_ph": "Comentarios, restricciones, todo lo que Claude deba saber", "mark_decided": "Marcar como decidido", "reopen": "Reabrir", "st_open": "Por decidir", "st_done": "Decidido",
+    "locked_msg": "Sin splash: el logotipo solo se entrega en {format}. Proporcione el logotipo en SVG para obtener el splash y el cargador.", "locked_short": "Sin splash (logotipo solo en {format})",
+    "more_options": "Otras opciones ({n})", "licence": "Licencia", "contrast_title": "Contrastes calculados (WCAG)", "pass": "cumple", "fail": "no cumple", "ok_count": "{n}/{m} cumplen",
+    "src_logo": "del logotipo", "src_sheet": "del tablero", "src_derived": "derivado", "src_proposed": "propuesto",
+    "font_heading": "Fuente de títulos", "font_body": "Fuente del texto", "font_accent": "Fuente de acento (manuscrita)", "font_note": "Las muestras usan la fuente si está instalada; si no, una fuente del sistema parecida.",
+    "st_text_surface": "Texto sobre la superficie (peor fondo)", "st_button": "Texto del botón sobre el botón",
+    "glass_rule": "Reglas: respaldo opaco sin backdrop-filter, con transparencia reducida o alto contraste; nunca texto sobre desenfoque sin respaldo; solo barras y capas superpuestas.",
+    "icons_names": "Iconos por descargar (separados por comas)", "icons_motion": "Iconos animados (vocabulario de movimiento)", "accent_style": "Estilo de acento (opcional)", "accent_none": "Ninguno", "surfaces": "Superficies con el estilo de acento",
+    "surfaces_ph": "por ejemplo barra superior y hojas", "summary_title": "Resumen y exportación", "not_decided": "aún sin decidir", "none_chosen": "nada seleccionado", "other_prefix": "Otro: ",
+    "export_title": "Exportar mis respuestas", "export_intro": "Descargue el archivo o cópielo: el texto de abajo siempre está. Entregue ds.plan.json a Claude Code (péguelo en la conversación o indique la ruta).",
+    "dl": "Descargar ds.plan.json", "copy": "Copiar al portapapeles", "copied": "Copiado.", "copy_failed": "La copia está bloqueada: seleccione el texto de abajo y cópielo a mano.", "dl_started": "Descarga iniciada. Si no ocurre nada (bloqueada aquí), copie el texto de abajo.",
+    "json_label": "ds.plan.json (solo lectura)", "md_label": "Resumen corto (Markdown)", "import_title": "Importar una exportación anterior", "import_intro": "Pegue un ds.plan.json para retomar donde lo dejó.",
+    "import_ph": "Pegue el JSON aquí", "import_btn": "Cargar", "import_ok": "Respuestas cargadas.", "import_other": "Respuestas cargadas, pero vienen de otra versión de las propuestas: revíselas.", "import_bad": "Este texto no es un ds.plan.json válido.",
+    "questions_title": "Preguntas abiertas", "answer_ph": "Su respuesta", "md_title": "Respuestas para {name}",
+}
+
+DE = {
+    "title": "Plan für das Designsystem {name}", "intro": "Wählen, bearbeiten oder kommentieren Sie jeden Vorschlag, exportieren Sie dann Ihre Antworten und geben Sie die Datei an Claude Code zurück.",
+    "progress": "{n} / {m} Themen entschieden", "accept_reco": "Empfehlungen übernehmen", "goto_export": "Meine Antworten exportieren", "jump": "Zu einem Thema springen", "toc": "Themen",
+    "inputs_title": "Was wir aus Ihren Dateien verstanden haben", "inputs_intro": "Jede Datei wurde vor jedem Vorschlag gelesen. Korrigieren Sie Falsches: Ihre Korrekturen kommen mit den Antworten zurück.",
+    "inputs_corr": "Korrigieren oder ergänzen", "vector_yes": "Vektor (SVG)", "vector_no": "Raster, kein Vektor", "typefaces": "Schriften", "implications": "Was das bedeutet", "uncertainties": "Unsicher",
+    "kind_logo": "Logo", "kind_brand-board": "Markentafel", "kind_ui-screenshot": "Screenshot", "kind_photo": "Foto", "kind_sketch": "Skizze", "kind_competitor": "Wettbewerber", "kind_document": "Dokument", "kind_other": "sonstiges",
+    "recommended": "Empfohlen", "always": "immer enthalten", "from_inputs": "Basierend auf:", "other_title": "Anderes (selbst schreiben)", "other_multi": "Weiteres hinzufügen", "other_ph": "Beschreiben Sie, was Sie stattdessen möchten",
+    "notes_label": "Notizen zu diesem Thema", "notes_ph": "Kommentare, Vorgaben, alles was Claude wissen soll", "mark_decided": "Als entschieden markieren", "reopen": "Wieder öffnen", "st_open": "Offen", "st_done": "Entschieden",
+    "locked_msg": "Kein Splash: Das Logo liegt nur als {format} vor. Liefern Sie das Logo als SVG, um Splash und Ladeanimation zu erhalten.", "locked_short": "Kein Splash (Logo nur als {format})",
+    "more_options": "Weitere Optionen ({n})", "licence": "Lizenz", "contrast_title": "Berechnete Kontraste (WCAG)", "pass": "bestanden", "fail": "nicht bestanden", "ok_count": "{n}/{m} bestanden",
+    "src_logo": "aus dem Logo", "src_sheet": "aus der Markentafel", "src_derived": "abgeleitet", "src_proposed": "vorgeschlagen",
+    "font_heading": "Schrift der Überschriften", "font_body": "Schrift des Textes", "font_accent": "Akzentschrift (Handschrift)", "font_note": "Die Muster nutzen die Schrift, wenn installiert, sonst eine ähnliche Systemschrift.",
+    "st_text_surface": "Text auf der Fläche (schlechtester Hintergrund)", "st_button": "Schaltflächentext auf der Schaltfläche",
+    "glass_rule": "Regeln: deckender Ersatz ohne backdrop-filter, bei reduzierter Transparenz oder hohem Kontrast; nie Text auf rohem Weichzeichner; nur Leisten und Überlagerungen.",
+    "icons_names": "Zu ladende Icons (kommagetrennt)", "icons_motion": "Animierte Icons (Bewegungsvokabular)", "accent_style": "Akzentstil (optional)", "accent_none": "Keiner", "surfaces": "Flächen mit dem Akzentstil",
+    "surfaces_ph": "zum Beispiel obere Leiste und Sheets", "summary_title": "Zusammenfassung und Export", "not_decided": "noch nicht entschieden", "none_chosen": "nichts ausgewählt", "other_prefix": "Anderes: ",
+    "export_title": "Meine Antworten exportieren", "export_intro": "Laden Sie die Datei herunter oder kopieren Sie sie: Der Text unten ist immer da. Geben Sie ds.plan.json an Claude Code (im Chat einfügen oder Pfad nennen).",
+    "dl": "ds.plan.json herunterladen", "copy": "In die Zwischenablage kopieren", "copied": "Kopiert.", "copy_failed": "Kopieren ist blockiert: Markieren Sie den Text unten und kopieren Sie ihn von Hand.", "dl_started": "Download gestartet. Passiert nichts (hier blockiert), kopieren Sie den Text unten.",
+    "json_label": "ds.plan.json (nur lesbar)", "md_label": "Kurzfassung (Markdown)", "import_title": "Früheren Export importieren", "import_intro": "Fügen Sie eine ds.plan.json ein, um dort weiterzumachen, wo Sie aufgehört haben.",
+    "import_ph": "JSON hier einfügen", "import_btn": "Laden", "import_ok": "Antworten geladen.", "import_other": "Antworten geladen, sie stammen aber aus einer anderen Version der Vorschläge: bitte prüfen.", "import_bad": "Dieser Text ist keine gültige ds.plan.json.",
+    "questions_title": "Offene Fragen", "answer_ph": "Ihre Antwort", "md_title": "Antworten für {name}",
+}
+
+STRINGS = {"en": EN, "fr": FR, "it": IT, "es": ES, "de": DE}
+
+
+def chrome(lang: str) -> dict:
+    return {**EN, **STRINGS.get(lang, {})}

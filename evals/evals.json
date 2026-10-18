@@ -24,6 +24,24 @@
       "prompt": "Ajoute un bouton d'accessibilité à notre design system (dossier ./maison-ds, site vitrine d'un restaurant, FR + EN) : je veux que les gens puissent agrandir le texte, mettre un contraste plus fort, des couleurs pour daltoniens et couper les animations. Le chat du site est en bas à droite.",
       "expected_output": "The accessibility section (from assets/starter) in ds.config.json and parts/, rewritten in French, with <ds-a11y position=\"left\"> because the chat bubble uses the bottom-right corner; the section states it is a preferences panel, not a compliance overlay; options listed with their WCAG criteria; high-contrast values computed by the build from the brand; qa.mjs a11y passes (200 % text at 390 px, Alt+A/Esc); English translations merged.",
       "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Nouveau client : Cap Vanille, un petit voyagiste qui vend des séjours accompagnés dans l'océan Indien. Voici son logo (logo.svg) et une planche d'ambiance (planche.jpg). Je veux un design system complet, avec réservation, espace voyageur et e-mails.",
+      "expected_output": "No scaffold, fetch or build yet. Claude asks (in the conversation) which languages are needed, which is the source and in which language to read the plan page (unless stated); reads both images and writes plan/inputs.md with colours sampled by image_facts.py and logo vector: true; researches the brand and the trade; writes plan/proposals.json (languages first, visual style topic with a shortlist, palettes with computed contrast, OFL typography, icons only from fetch_icons.py RECOMMENDED sets with a trade-specific list, scope checkboxes, one recommended card per topic); validates and renders plan/plan.html with plan_page.py; publishes or opens it; then STOPS and waits for ds.plan.json. new_project.py has not been run.",
+      "files": [
+        "logo.svg",
+        "planche.jpg"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Voici l'export de la page de plan (ds.plan.json, collé ci-dessous) et le fichier plan/proposals.json. Construis le design system.",
+      "expected_output": "Claude runs apply_plan.py <project_dir> ds.plan.json --proposals plan/proposals.json (creating the project through new_project.py when needed), checks ds.config.json (themes, primitives with provenance, fonts, icon set, style, sections; splash section removed when the export says the logo is not SVG) and notes/plan.md (decisions with reasons, open questions, export hash), then runs the printed commands: fetch_icons.py with the chosen set and names, palette_check.py, build.py, qa.mjs (PASSED for a single-language project), looks at the screenshots and hands over with the open questions. Nothing is invented beyond the export and the proposals.",
+      "files": [
+        "ds.plan.json",
+        "plan/proposals.json"
+      ]
     }
   ]
 }

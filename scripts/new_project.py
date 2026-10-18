@@ -7,6 +7,8 @@ Creates ds.config.json (placeholder neutral palette, the core sections in order;
 is a block copied from dark or light, with a TODO note, so the page offers a theme picker), parts/ (the starter sections,
 written in English: rewrite their visible text in the source language), i18n/glossary.md, icons/,
 hairline/figures/, notes/. Never overwrites an existing project.
+The scaffold has no logo: its splash is a placeholder (a rounded square with the initial) and the build says so. The splash and
+loader can only come from an SVG mark: with a raster logo, remove the splash section instead (apply_plan.py does it).
 """
 from __future__ import annotations
 
@@ -122,6 +124,7 @@ def main() -> None:
     shutil.copy2(SKILL / "assets" / "glossary_template.md", project / "i18n" / "glossary.md")
     (project / "ds.config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("created %s" % project)
+    print("note: no logo yet. The splash is a scaffold placeholder; set logo.mark to an SVG, or remove the splash section when the logo is raster.")
     print("next:\n  python %s/scripts/fetch_icons.py get \"%s\" lucide %s"
           "\n  python %s/scripts/build.py \"%s\"\n  node %s/scripts/qa.mjs \"%s\""
           % (SKILL, project, " ".join(STARTER_ICONS), SKILL, project, SKILL, project))

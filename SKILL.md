@@ -11,7 +11,8 @@ a screen. The page is assembled from small section files by a build script, tran
 and checked in a real browser. Everything the scripts need ships in this folder (`vendor/`): you install nothing
 except Python 3.10+, Node 18+ and an Edge or Chrome browser.
 
-What "done" looks like: `dist/design.html` opens offline, both themes look intentional, every language reads as
+You always plan before you build: research, proposals on every topic, one interactive page, the person's choices as a file,
+then the build from that file. What "done" looks like: `dist/design.html` opens offline, both themes look intentional, every language reads as
 if written in it, a phone at 390 px never scrolls sideways, `qa.mjs` passes, you have looked at the screenshots,
 and the Notes section lists honestly what was guessed.
 
@@ -20,13 +21,30 @@ and the Notes section lists honestly what was guessed.
 Work through these phases in order. Each names the reference to read when you get there — read it then, not before.
 
 ### 1. Discovery — before any file
-Read `references/discovery.md`. Read what the person gave you (brand sheet, product plan, existing app), then ask
+Read `references/discovery.md`. **Ask the languages first**, in the conversation, unless the prompt or the files already say: which
+languages, which is the source (everything is written in it), and in which language they want to read the plan page. **Read every
+image given** (logo, brand board, screenshots, photos, sketches, competitors; PDFs page by page), sample colours with
+`scripts/image_facts.py` and write `plan/inputs.md` before proposing anything (`references/planning.md`). Read what the person gave you (brand sheet, product plan, existing app), then ask
 only what you cannot find: product type, languages, editions/plans, the screens that matter, the brand assets
 you are allowed to use. The product type picks the screen packs (`references/modules/`): a CRM gets pipeline and
 contact screens, a website gets page templates and an editor, a shop gets catalogue and checkout. Never invent
 business facts (prices, plan limits, legal text): use clearly-marked demo values and list them in Notes.
 
-### 2. Scaffold
+### 2. Plan page — propose, let them choose, build from the export
+Mandatory, right after Discovery. Read `references/planning.md` (and `references/visual-styles.md`). Research the brand and the trade, write
+`plan/proposals.json` (a topic each: languages first, brand and tone, logo, **visual style**, palettes, dark and extra themes, typography,
+icons, illustrations, splash, imagery, shape and motion, product screens, sections, editions, mobile, AI, e-mails, notifications, auth,
+accessibility, priorities; 2 to 4 cards, one recommended), then
+```bash
+python scripts/plan_page.py plan/proposals.json --out plan/plan.html [--embed-inputs]
+```
+Publish it (claude.ai Artifact when available, else open the file) and **STOP**: scaffold nothing until the person gives back `ds.plan.json`
+(pasted or a path). Then `python scripts/apply_plan.py <project_dir> ds.plan.json --proposals plan/proposals.json` creates or patches the
+project (`ds.config.json`, `notes/plan.md`) and prints the next commands; continue with Scaffold-level files, Foundations and Sections
+using those decisions. Skip only if the person explicitly asks (write "planning skipped" in `notes/discovery.md`).
+
+### 3. Scaffold
+(`apply_plan.py` already runs this when the project does not exist.)
 ```bash
 python scripts/new_project.py <project_dir> --name "Acme" --type crm --langs fr,it,en --source fr
 # more than light/dark: --themes light,dark,brand   (block copied from dark with a TODO; brand:light copies light)
@@ -36,19 +54,21 @@ figures and notes. It builds and passes QA immediately, with placeholder colours
 The starter sections are written in English: rewrite their visible text in the **source language** when you adopt
 them (the source language is the one the page is written in; the others are translated from it).
 
-### 3. Foundations
+### 4. Foundations
 - **Colours and themes** — `references/tokens-and-color.md`. Put the brand's primitives and the two themes in
   `ds.config.json`. Dark is designed, not inverted. A third mode (national, campaign, sub-brand) is an extra
   entry in `themes` with a `base`; the page then offers a theme picker (see the reference: when to add one, and how
   to propose a new dark palette as named alternatives). Then run `python scripts/palette_check.py <project_dir>` and
   fix every FAIL (text contrast, and chart colours that colour-blind readers cannot tell apart).
 - **Logo** — set `logo.light`, `logo.dark` and `logo.mark` (square symbol) to SVG files in `assets/`. The splash
-  and loader are generated from the mark as animated SVG images.
+  and loader are generated from the mark as animated SVG images, and **only from an SVG**: if the logo is raster (PNG, JPG, WebP,
+  GIF, PDF-only), say plainly there will be no splash and no loader, never trace, redraw or approximate it, remove the splash
+  section (`apply_plan.py` does) and ask for the SVG. The scaffold's rounded-square-with-initial is a placeholder, not a logo.
 - **Fonts** — self-host (`fonts.faces`), check the licence (OFL is fine), note it.
 - **Icons** — `references/icons.md`. Pick ONE open-source set with the person, then
   `python scripts/fetch_icons.py get <project_dir> <set> name[=alias] …`. Licences are logged in `icons/SOURCES.md`.
 
-### 4. Sections
+### 5. Sections
 Read `references/sections.md` (core sections and their acceptance criteria) and the module files for the product
 type. Each section is `parts/<id>.html` (+ optional `.css`, `.js`, `.md`) and one entry in `ds.config.json →
 sections`; **the order of that list is the order, numbering and navigation of the page** — never number by hand.
@@ -60,29 +80,29 @@ assistants, chat and agents `references/ai-ux.md`; for emails `references/emails
 `references/wearables.md`; for photos and their licences `references/imagery.md`. Loyalty programmes and the
 spaces around a service business (customer portal, partners, crew, B2B) have screen packs in `references/modules/`.
 
-### 5. Build and preview
+### 6. Build and preview
 ```bash
 python scripts/build.py <project_dir>                    # dist/design.html, design.md, splash/, icons/, logos, fonts
 python scripts/build.py <project_dir> --out _preview-me.html   # writes only that file: use this while others work too
 ```
 The build refuses unknown markers, missing parts and duplicate ids — read its message, it says what to fix.
 
-### 6. Parallel work (big systems)
+### 7. Parallel work (big systems)
 More than four new sections, or a deadline: split the work across agents, one section each. Read
 `references/orchestration.md` first — it has the brief template, the ownership and prefix rules, and how to merge
 their notes. You stay the integrator: you own `ds.config.json`, `i18n/` and the final build.
 
-### 7. Languages
+### 8. Languages
 `references/i18n.md`. Build, extract (`node scripts/i18n_extract.mjs <project_dir>`), translate the chunks
 with the glossary (in parallel when large), merge (`python scripts/i18n_merge.py <project_dir>`), rebuild.
 
-### 8. Quality
+### 9. Quality
 `references/qa.md`. `node scripts/qa.mjs <project_dir>` must print PASSED (console errors, failed requests,
 390 px overflow, untranslated sentences). Then `node scripts/qa.mjs <project_dir> shots` and **open the
 screenshots and look** — the checks cannot see a clipped label, a muddy dark theme or a figure on the wrong
 colour. Fix, rebuild, look again. Check `references/pitfalls.md` when something behaves strangely.
 
-### 9. Hand-over
+### 10. Hand-over
 Tell the person, briefly: where the files are, what each section contains, what you verified (and how), and the
 open questions (guessed values, decisions to confirm). Publish or share the page if your environment allows.
 
@@ -145,11 +165,12 @@ A design system people trust is specific, complete and honest:
 ## Files
 
 ```
-scripts/   new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · cvd_palettes.py · fetch_icons.py
+scripts/   plan_page.py (+ plan_schema.py, plan_strings.py) · apply_plan.py · image_facts.py (+ _pixels.mjs)
+           new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · cvd_palettes.py · fetch_icons.py
            i18n_extract.mjs · i18n_merge.py · qa.mjs · hairline_look.mjs · _browser.mjs
-assets/    template.html · theme-toggle.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y) · fonts/ (Atkinson Hyperlegible)
+assets/    plan/ (proposals.schema.json · example.proposals.json · page.css, page_*.js) · template.html · theme-toggle.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y) · fonts/ (Atkinson Hyperlegible)
            starter/ (the core sections) · glossary_template.md · brief_template.md
-references/ discovery · sections · tokens-and-color · icons · illustrations-hairline · components · accessibility · ai-ux
+references/ discovery · planning · visual-styles · sections · tokens-and-color · icons · illustrations-hairline · components · accessibility · ai-ux
            emails · mobile-pwa · auth · notifications · search · wearables · imagery · i18n · orchestration · qa · pitfalls
            modules/ (screen packs per product type, incl. loyalty and portals)
 vendor/    hairline 0.5.0 (MIT) · hairline-create (MIT, figure engine and skill) · playwright-core 1.64 (Apache-2.0)

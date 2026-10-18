@@ -167,8 +167,26 @@ def logo(project: Path, cfg: dict, key: str) -> str:
     src = cfg.get("logo", {}).get(key)
     if not src or not (project / src).exists():
         return '<span class="brand-name logo-%s" data-i18n-skip>%s</span>' % (key, html.escape(cfg["name"]))
+    if Path(src).suffix.lower() != ".svg":  # a raster logo is shown as an image; it can never feed the splash
+        return '<img class="brand-logo logo-%s" src="%s" alt="" data-i18n-skip>' % (key, html.escape(Path(src).name, quote=True))
     svg = re.sub(r"<\?xml.*?\?>|<!--.*?-->", "", read(project / src), flags=re.S).strip()
     return svg.replace("<svg", '<svg class="brand-logo logo-%s" aria-hidden="true" focusable="false"' % key, 1)
+
+
+SPLASH_KEYS = ("splash-light", "splash-dark", "loader-light", "loader-dark")
+
+
+def splash_state(cfg: dict) -> str:
+    """"ok" (an SVG mark), "placeholder" (no mark set: scaffold only) or "skipped" (the mark is not an SVG)."""
+    mark = cfg.get("logo", {}).get("mark")
+    if not mark:
+        return "placeholder"
+    return "ok" if Path(mark).suffix.lower() == ".svg" else "skipped"
+
+
+def splash_svgs(project: Path, cfg: dict) -> dict[str, str]:
+    """The generated splash and loader images; nothing at all (never a stand-in) when logo.mark is not an SVG."""
+    return {} if splash_state(cfg) == "skipped" else SP.all_svgs(project, cfg)
 
 
 def theme_labels(cfg: dict) -> dict:
@@ -249,7 +267,8 @@ def page_markers(cfg: dict, project: Path, secs: list[tuple], md: str) -> dict[s
         "SWATCHES": TK.swatches(cfg), "SLOTS_LIGHT": TK.slots(cfg, "light"), "SLOTS_DARK": TK.slots(cfg, "dark"),
         "CONTRAST_LIGHT": TK.contrast_rows(cfg, "light"), "CONTRAST_DARK": TK.contrast_rows(cfg, "dark"),
         "CHART_SWATCHES": TK.chart_swatches(cfg), "ICON_GRID": icon_grid(project), **extra_theme_markers(cfg),
-        **{k.upper().replace("-", "_") + "_URI": SP.data_uri(v) for k, v in SP.all_svgs(project, cfg).items()},
+        **{k.upper().replace("-", "_") + "_URI": SP.data_uri(v) if v else "" for k, v in
+           {**dict.fromkeys(SPLASH_KEYS, ""), **splash_svgs(project, cfg)}.items()},
     }
 
 
@@ -278,8 +297,10 @@ def copy_assets(cfg: dict, project: Path, dist: Path) -> None:
         shutil.copytree(project / "icons", dist / "icons", dirs_exist_ok=True)
     # Atkinson Hyperlegible (OFL) for the accessibility panel's "readable font"
     shutil.copytree(ASSETS / "fonts", dist / "fonts", dirs_exist_ok=True)
-    (dist / "splash").mkdir(exist_ok=True)
-    for name, svg in SP.all_svgs(project, cfg).items():
+    svgs = splash_svgs(project, cfg)
+    if svgs:
+        (dist / "splash").mkdir(exist_ok=True)
+    for name, svg in svgs.items():
         (dist / "splash" / (name + ".svg")).write_text(svg, encoding="utf-8")
 
 
@@ -299,6 +320,11 @@ def main() -> None:
         (dist / "design.md").write_text(md, encoding="utf-8")
         copy_assets(cfg, project, dist)
     print("wrote %s (%d KB, %d sections)" % (out, len(page) // 1024, len(cfg["sections"])))
+    state = splash_state(cfg)
+    if state == "skipped":
+        print("splash skipped: logo.mark is not an SVG (provide the logo as SVG to get the splash and the loader)")
+    elif state == "placeholder":
+        print("splash: scaffold placeholder (no logo.mark set): set an SVG mark, or remove the splash section")
 
 
 if __name__ == "__main__":

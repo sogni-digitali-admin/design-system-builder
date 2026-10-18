@@ -1,0 +1,340 @@
+{
+  "plan_version": 1,
+  "lang": "fr",
+  "project": {"name": "Cap Vanille", "slug": "cap-vanille", "type": "booking", "langs": ["fr", "en"], "source_lang": "fr", "intro": "Exemple fictif : un petit voyagiste qui vend des séjours accompagnés dans l'océan Indien. Chaque sujet propose des options ; une seule est recommandée, et vous pouvez toujours écrire la vôtre."},
+  "inputs": [
+    {"id": "logo", "file": "inputs/logo.svg", "kind": "logo", "vector": true, "format": "SVG", "summary": "Logo horizontal : une voile stylisée au-dessus du nom en capitales. Fond transparent, trois couleurs.", "colours": [{"hex": "#1B5E7A", "share": 61.0, "note": "bleu lagon, la voile"}, {"hex": "#F2865E", "share": 24.0, "note": "corail, le soleil"}, {"hex": "#0F2E40", "share": 15.0, "note": "le nom"}], "implications": ["Palette dérivée du logo : lagon, corail, encre.", "Le logo est vectoriel : le splash animé est possible."], "uncertainties": ["Pas de version claire sur fond foncé fournie."]},
+    {"id": "board", "file": "inputs/planche-marque.jpg", "kind": "brand-board", "summary": "Planche d'ambiance : photos de lagon, papier sable, un titre en serif à fort contraste, étiquettes arrondies.", "colours": [{"hex": "#F6EFE3", "share": 38.0, "note": "papier sable"}, {"hex": "#1B5E7A", "share": 22.0}, {"hex": "#F2865E", "share": 6.0}], "typefaces": ["serif à empattements marqués (non identifié, proche OFL : Fraunces)"], "implications": ["Ton chaleureux et éditorial, pas technologique.", "Rayons généreux (étiquettes en pilule)."], "uncertainties": ["Les photos ont-elles une licence d'usage web ?"]}
+  ],
+  "topics": [
+    {
+      "id": "languages",
+      "group": "Langues",
+      "kind": "choice",
+      "title": "Langues",
+      "why": "Demandées en premier, avant toute proposition : la page et tous les textes sont écrits dans la langue source, puis traduits. Les réponses données dans la conversation sont déjà reportées ici ; corrigez-les si besoin. Choisissez aussi le registre d'adresse (vouvoiement ou tutoiement) par langue.",
+      "preselected": "fr-en",
+      "proposals": [
+        {"id": "fr-en", "title": "Français (source) et anglais", "recommended": true, "summary": "Deux langues.", "why": "Ce que le brief indique.", "tokens": {"source_lang": "fr", "langs": ["fr", "en"]}, "fields": [{"key": "address_fr", "label": "Adresse en français", "type": "select", "options": ["vous (formel)", "tu (informel)"], "value": "vous (formel)"}, {"key": "address_en", "label": "Adresse en anglais", "type": "text", "value": "you (pas de distinction)"}]},
+        {"id": "fr-en-it", "title": "Français (source), anglais et italien", "summary": "Trois langues.", "why": "À choisir si un marché italien est prévu.", "tokens": {"source_lang": "fr", "langs": ["fr", "en", "it"]}, "fields": [{"key": "address_fr", "label": "Adresse en français", "type": "select", "options": ["vous (formel)", "tu (informel)"], "value": "vous (formel)"}, {"key": "address_en", "label": "Adresse en anglais", "type": "text", "value": "you (pas de distinction)"}, {"key": "address_it", "label": "Adresse en italien", "type": "select", "options": ["Lei / voi (formel)", "tu (informel)"], "value": "Lei / voi (formel)"}]},
+        {"id": "fr", "title": "Français seulement", "summary": "Une seule langue : la page et le produit sont écrits en français.", "why": "Le plus simple à tenir ; on pourra ajouter des langues plus tard.", "tokens": {"source_lang": "fr", "langs": ["fr"]}, "fields": [{"key": "address_fr", "label": "Adresse en français", "type": "select", "options": ["vous (formel)", "tu (informel)"], "value": "vous (formel)"}]}
+      ]
+    },
+    {
+      "id": "brand",
+      "group": "Marque",
+      "kind": "choice",
+      "title": "Marque et positionnement",
+      "why": "Tout le reste en découle : une couleur, un ton ou un écran se justifient par rapport à une promesse. Choisissez la phrase qui vous ressemble, puis corrigez-la.",
+      "proposals": [
+        {"id": "expert", "title": "L'expert local, accompagné", "recommended": true, "summary": "Séjours préparés par des gens qui y vivent, avec un interlocuteur unique du premier message au retour.", "why": "Cohérent avec la planche d'ambiance (chaleur, papier, photos vraies) et différenciant face aux plateformes.", "details": {"Public": "Couples et petits groupes de 30 à 60 ans qui veulent être guidés", "Promesse": "Un voyage sans friction, préparé par quelqu'un qui connaît l'île", "Inspirations": ["Un voyagiste artisanal haut de gamme", "Une maison d'hôtes familiale", "Un carnet de voyage éditorial"], "À éviter": ["Le vocabulaire de promotion (bons plans, offres flash)", "Les clichés cartes postales saturés"]}, "input_ids": ["board"], "fields": [{"key": "statement", "label": "Phrase de positionnement", "type": "textarea", "value": "Cap Vanille prépare des séjours dans l'océan Indien, de A à Z, avec des gens qui y vivent."}]},
+        {"id": "comparateur", "title": "Le comparateur malin", "summary": "Un outil clair pour comparer et réserver vite, au meilleur prix.", "why": "Fonctionne si le volume prime sur la relation ; peu cohérent avec la planche fournie.", "details": {"Public": "Voyageurs autonomes sensibles au prix", "Promesse": "Le bon séjour au bon prix en trois clics", "Inspirations": ["Un comparateur de vols", "Une application de réservation d'hôtels", "Un moteur d'enchères"], "À éviter": ["Un ton trop intime"]}, "fields": [{"key": "statement", "label": "Phrase de positionnement", "type": "textarea", "value": "Cap Vanille compare et réserve des séjours dans l'océan Indien en trois clics."}]},
+        {"id": "luxe", "title": "Le luxe discret", "summary": "Peu de séjours, très soignés, sur demande uniquement.", "why": "Possible plus tard ; demande des photographies et un service que le catalogue actuel n'annonce pas.", "details": {"Public": "Clientèle haut de gamme", "Promesse": "Une adresse confidentielle à la fois", "Inspirations": ["Une maison de couture", "Un club privé", "Une revue d'art de vivre"], "À éviter": ["Les prix affichés partout"]}, "fields": [{"key": "statement", "label": "Phrase de positionnement", "type": "textarea", "value": "Cap Vanille ouvre quelques adresses rares, sur demande."}]}
+      ]
+    },
+    {
+      "id": "voice",
+      "group": "Marque",
+      "kind": "choice",
+      "title": "Ton de la voix",
+      "why": "Le ton fixe le vocabulaire des boutons, des erreurs et des e-mails. Il doit exister avant les écrans, sinon chaque écran invente le sien.",
+      "proposals": [
+        {"id": "chaleureux", "title": "Chaleureux et précis", "recommended": true, "summary": "On parle comme un conseiller attentionné : phrases courtes, concrètes, jamais familières.", "why": "Rassure sur un achat important sans paraître distant.", "details": {"Registre": "chaleureux, soigné", "Adresse": ["fr : vous", "en : you"], "À dire": ["Votre séjour est confirmé.", "Nous vous écrivons sous 24 h."], "À ne pas dire": ["Oups, une erreur est survenue !", "Offre à saisir vite !"]}},
+        {"id": "sobre", "title": "Sobre et professionnel", "summary": "Neutre et factuel, sans effet de style.", "why": "Sûr, mais sans personnalité face aux plateformes.", "details": {"Registre": "neutre", "Adresse": ["fr : vous", "en : you"], "À dire": ["Réservation enregistrée.", "Paiement reçu."], "À ne pas dire": ["On a hâte de vous voir !", "Génial !"]}},
+        {"id": "complice", "title": "Complice et léger", "summary": "Tutoiement, humour discret, beaucoup de vie.", "why": "Ne convient pas à une clientèle de 40 ans et plus qui réserve un voyage coûteux.", "details": {"Registre": "familier", "Adresse": ["fr : tu", "en : you"], "À dire": ["C'est réglé, tu peux préparer ta valise !"], "À ne pas dire": ["Veuillez patienter."]}}
+      ]
+    },
+    {
+      "id": "naming",
+      "group": "Marque",
+      "kind": "choice",
+      "title": "Nom, signature et domaine",
+      "why": "Le nom et la signature apparaissent sur le splash, les e-mails et les pages. Le domaine est noté ici mais jamais réservé par le skill.",
+      "proposals": [
+        {"id": "garder", "title": "Garder le nom actuel", "recommended": true, "summary": "Cap Vanille, signature « Voyages sur mesure, océan Indien ».", "why": "Aucun coût de changement ; le nom est déjà sur le logo.", "fields": [{"key": "name", "label": "Nom", "value": "Cap Vanille"}, {"key": "tagline", "label": "Signature", "value": "Voyages sur mesure, océan Indien"}, {"key": "domain", "label": "Domaine (démo)", "value": "capvanille.example"}]},
+        {"id": "court", "title": "Signature plus courte", "summary": "Cap Vanille, signature « Là-bas, avec vous ».", "why": "Plus mémorable, mais moins explicite sur le métier.", "fields": [{"key": "name", "label": "Nom", "value": "Cap Vanille"}, {"key": "tagline", "label": "Signature", "value": "Là-bas, avec vous"}, {"key": "domain", "label": "Domaine (démo)", "value": "capvanille.example"}]}
+      ]
+    },
+    {
+      "id": "logo",
+      "group": "Marque",
+      "kind": "choice",
+      "title": "Usage du logo",
+      "why": "Le design system a besoin d'une version pour fond clair, d'une pour fond sombre et d'un symbole carré. Dites ce qui existe ; nous ne redessinons jamais un logo.",
+      "proposals": [
+        {"id": "mark-only", "title": "On fournit le clair et le symbole", "recommended": true, "summary": "Logo clair en SVG et symbole carré en SVG ; la version sombre sera dérivée en inversant uniquement le nom.", "why": "C'est ce qui existe aujourd'hui (voir le fichier logo).", "details": {"Existant": ["logo clair : oui (SVG)", "logo sombre : non", "symbole : oui (SVG)"], "Variantes à prévoir": ["clair", "sombre (à fournir ou à valider)", "symbole"]}, "input_ids": ["logo"]},
+        {"id": "complete", "title": "On fournit les trois variantes", "summary": "Clair, sombre et symbole, tous en SVG.", "why": "Le plus sûr : aucune dérivation.", "details": {"Variantes à prévoir": ["clair", "sombre", "symbole"]}},
+        {"id": "wordmark", "title": "Pas de logo : texte seulement", "summary": "Le nom en typographie de marque tient lieu de logo pour l'instant.", "why": "Honnête si le logo est en cours de création ; le splash animé n'est alors pas possible.", "details": {"Variantes à prévoir": ["nom en texte"]}}
+      ]
+    },
+    {
+      "id": "style",
+      "group": "Direction visuelle",
+      "kind": "style",
+      "title": "Style visuel",
+      "why": "Le style décide des surfaces, des bordures, des ombres et de la profondeur avant les couleurs. Choisissez un style principal, et au besoin un style d'accent pour quelques surfaces précises (par exemple du verre pour la barre du haut et les feuilles modales seulement).",
+      "proposals": [
+        {"id": "editorial", "title": "Éditorial", "recommended": true, "summary": "Grande typographie, filets fins, grille visible, papier plutôt qu'écran.", "why": "Prolonge la planche d'ambiance (serif fort, papier sable) et valorise les photos.", "style": {"family": "editorial", "radius": {"sm": "4px", "md": "6px", "lg": "10px", "full": "999px"}, "border": "1px", "shadow": "none", "density": "comfortable", "ink": "#111111", "surface": "#FAF7F2", "bg_worst": "#FAF7F2", "btn_bg": "#111111", "btn_fg": "#FFFFFF"}},
+        {"id": "soft", "title": "Doux et arrondi", "summary": "Surfaces douces, grands rayons, ombres diffuses, couleurs peu contrastées entre elles.", "why": "Accueillant pour une clientèle qui réserve un voyage ; attention à garder 3:1 sur les bordures utiles.", "style": {"family": "soft", "radius": {"sm": "10px", "md": "16px", "lg": "28px", "full": "999px"}, "border": "0", "shadow": "0 8px 24px rgb(30 58 74 / .12)", "density": "comfortable", "ink": "#1E3A4A", "surface": "#E8EEF1", "bg_worst": "#E8EEF1", "btn_bg": "#1E3A4A", "btn_fg": "#FFFFFF"}},
+        {"id": "glass-lite", "title": "Verre léger", "summary": "Surfaces peu transparentes avec flou discret, réservées à la barre et aux feuilles.", "why": "Donne de la profondeur sur les photos de lagon sans fatiguer la lecture.", "style": {"family": "glass-lite", "radius": {"sm": "10px", "md": "14px", "lg": "22px", "full": "999px"}, "border": "1px", "shadow": "0 6px 20px rgb(15 46 64 / .12)", "blur": "12px", "density": "comfortable", "ink": "#0F2E40", "surface": "#FFFFFF", "surface_alpha": 0.8, "bg_worst": "#2A8CA8", "btn_bg": "#1B5E7A", "btn_fg": "#FFFFFF"}},
+        {"id": "minimalist", "title": "Minimaliste", "shortlist": false, "summary": "À plat, beaucoup de blanc, bordures fines, aucune ombre.", "why": "Très lisible ; peut paraître froid pour un métier d'émotion.", "style": {"family": "minimalist", "radius": {"sm": "6px", "md": "8px", "lg": "12px", "full": "999px"}, "border": "1px", "shadow": "none", "density": "comfortable", "ink": "#0F2E40", "surface": "#FFFFFF", "bg_worst": "#FFFFFF", "btn_bg": "#1B5E7A", "btn_fg": "#FFFFFF"}},
+        {"id": "glass", "title": "Liquid glass", "shortlist": false, "summary": "Surfaces translucides superposées, flou, reflets, profondeur douce.", "why": "Spectaculaire ; règles : toujours un fond opaque de repli, jamais de texte sur le flou brut, limité aux barres et aux feuilles.", "style": {"family": "glass", "radius": {"sm": "12px", "md": "18px", "lg": "28px", "full": "999px"}, "border": "1px", "shadow": "0 10px 30px rgb(15 46 64 / .18)", "blur": "24px", "density": "comfortable", "ink": "#0F2E40", "surface": "#FFFFFF", "surface_alpha": 0.62, "bg_worst": "#2A8CA8", "btn_bg": "#1B5E7A", "btn_fg": "#FFFFFF"}},
+        {"id": "playful", "title": "Ludique et arrondi", "shortlist": false, "summary": "Pilules, couleurs franches, petits mouvements.", "why": "Pour une clientèle jeune ; décalé pour des séjours accompagnés.", "style": {"family": "playful", "radius": {"sm": "14px", "md": "20px", "lg": "32px", "full": "999px"}, "border": "2px", "shadow": "0 4px 0 rgb(15 46 64 / .15)", "density": "comfortable", "ink": "#0F2E40", "surface": "#FFF4D6", "bg_worst": "#FFF4D6", "btn_bg": "#C2410C", "btn_fg": "#FFFFFF"}},
+        {"id": "brutalist", "title": "Brutaliste", "shortlist": false, "summary": "Bordures épaisses, aplats, ombres dures, grille apparente.", "why": "Très marqué ; trop éloigné de la marque.", "style": {"family": "brutalist", "radius": {"sm": "0px", "md": "0px", "lg": "0px", "full": "0px"}, "border": "3px", "shadow": "6px 6px 0 #000000", "density": "compact", "ink": "#000000", "surface": "#FFE24A", "bg_worst": "#FFE24A", "btn_bg": "#000000", "btn_fg": "#FFE24A"}},
+        {"id": "corporate", "title": "Classique d'entreprise", "shortlist": false, "summary": "Sobre, symétrique, rayons moyens, ombres légères.", "why": "Rassurant mais impersonnel.", "style": {"family": "corporate", "radius": {"sm": "4px", "md": "6px", "lg": "8px", "full": "999px"}, "border": "1px", "shadow": "0 1px 3px rgb(18 38 58 / .15)", "density": "compact", "ink": "#12263A", "surface": "#FFFFFF", "bg_worst": "#F3F5F8", "btn_bg": "#12263A", "btn_fg": "#FFFFFF"}},
+        {"id": "material", "title": "Type Material", "shortlist": false, "summary": "Élévations par niveaux, composants tonaux, rayons moyens.", "why": "Familier sur Android ; moins distinctif.", "style": {"family": "material", "radius": {"sm": "8px", "md": "12px", "lg": "16px", "full": "999px"}, "border": "0", "shadow": "0 1px 2px rgb(0 0 0 / .3), 0 2px 6px 2px rgb(0 0 0 / .15)", "density": "comfortable", "ink": "#1D1B20", "surface": "#F3EDF7", "bg_worst": "#F3EDF7", "btn_bg": "#6750A4", "btn_fg": "#FFFFFF"}}
+      ]
+    },
+    {
+      "id": "palette",
+      "group": "Couleurs",
+      "kind": "palette",
+      "title": "Palette claire",
+      "why": "Les couleurs de la marque deviennent des rôles (fond, texte, action, accent). Chaque proposition affiche ses contrastes calculés : modifiez une teinte, les ratios se recalculent. Les valeurs mesurées sur vos fichiers sont notées « logo ».",
+      "proposals": [
+        {"id": "lagon", "title": "Lagon et corail (logo)", "recommended": true, "summary": "Les trois couleurs du logo, avec un papier très pâle pour les surfaces.", "why": "Fidèle au logo : le bleu porte les actions, le corail ne sert qu'aux accents.", "input_ids": ["logo", "board"], "palette": {"theme": "light", "base": "light", "primitives": [{"name": "lagon-900", "hex": "#0F2E40", "source": "logo", "input_id": "logo", "note": "texte, nom du logo"}, {"name": "lagon-700", "hex": "#1B5E7A", "source": "logo", "input_id": "logo", "note": "action principale"}, {"name": "lagon-500", "hex": "#2A8CA8", "source": "derived", "note": "focus, graphiques"}, {"name": "lagon-100", "hex": "#D8EEF3", "source": "derived", "note": "bordures"}, {"name": "lagon-50", "hex": "#F1F8FA", "source": "derived", "note": "surfaces"}, {"name": "corail-400", "hex": "#F2865E", "source": "logo", "input_id": "logo", "note": "accent"}, {"name": "blanc", "hex": "#FFFFFF", "source": "proposed", "note": "fond"}], "roles": {"bg": "blanc", "surface": "lagon-50", "text": "lagon-900", "text-muted": "#46606B", "primary": "lagon-700", "on-primary": "blanc", "primary-hover": "lagon-900", "accent": "corail-400", "on-accent": "lagon-900", "border": "lagon-100", "focus": "lagon-500", "success": "#166534", "warning": "#92400E", "danger": "#BE123C", "info": "#1D4ED8"}, "chart": ["#1B5E7A", "#D9622B", "#C2185B", "#B8860B", "#7A4FA3", "#2F8F5E"]}},
+        {"id": "sable", "title": "Sable et terre cuite", "summary": "Papier chaud, texte brun, action terre cuite.", "why": "Plus chaleureux et plus éditorial ; s'éloigne du bleu du logo, qui ne reste qu'en illustration.", "input_ids": ["board"], "palette": {"theme": "light", "base": "light", "primitives": [{"name": "terre-900", "hex": "#2B1D14", "source": "proposed"}, {"name": "terre-600", "hex": "#B93815", "source": "proposed", "note": "action"}, {"name": "terre-800", "hex": "#8E2A0E", "source": "derived", "note": "survol"}, {"name": "sable-100", "hex": "#F6EFE3", "source": "sheet", "input_id": "board", "note": "papier"}, {"name": "sable-50", "hex": "#FBF5EA", "source": "derived", "note": "surface"}, {"name": "or-400", "hex": "#E8A33D", "source": "proposed", "note": "accent"}, {"name": "blanc", "hex": "#FFFFFF", "source": "proposed"}], "roles": {"bg": "blanc", "surface": "sable-50", "text": "terre-900", "text-muted": "#6B5444", "primary": "terre-600", "on-primary": "blanc", "primary-hover": "terre-800", "accent": "or-400", "on-accent": "terre-900", "border": "sable-100", "focus": "terre-600", "success": "#166534", "warning": "#92400E", "danger": "#BE123C", "info": "#1D4ED8"}}},
+        {"id": "foret", "title": "Vert forêt et or", "summary": "Vert profond, or pâle : voyage nature, safari, randonnée.", "why": "Évoque la nature plus que la mer ; pertinent seulement si le catalogue s'oriente vers l'intérieur des terres.", "palette": {"theme": "light", "base": "light", "primitives": [{"name": "foret-900", "hex": "#10261C", "source": "proposed"}, {"name": "foret-700", "hex": "#1F6B45", "source": "proposed", "note": "action"}, {"name": "foret-500", "hex": "#2F8F5E", "source": "derived"}, {"name": "foret-50", "hex": "#EEF5F0", "source": "derived", "note": "surface"}, {"name": "foret-100", "hex": "#D5E6DA", "source": "derived", "note": "bordures"}, {"name": "or-400", "hex": "#D9A441", "source": "proposed", "note": "accent"}, {"name": "blanc", "hex": "#FFFFFF", "source": "proposed"}], "roles": {"bg": "blanc", "surface": "foret-50", "text": "foret-900", "text-muted": "#4A6256", "primary": "foret-700", "on-primary": "blanc", "primary-hover": "foret-900", "accent": "or-400", "on-accent": "foret-900", "border": "foret-100", "focus": "foret-700", "success": "#166534", "warning": "#92400E", "danger": "#BE123C", "info": "#1D4ED8"}}}
+      ]
+    },
+    {
+      "id": "dark",
+      "group": "Couleurs",
+      "kind": "palette",
+      "title": "Thème sombre",
+      "why": "Le sombre se dessine, il ne s'obtient pas en inversant le clair : fond teinté de la marque, surfaces un cran plus claires, texte pas tout à fait blanc. Trois pistes, avec leurs contrastes calculés.",
+      "proposals": [
+        {"id": "nuit-lagon", "title": "Nuit lagon", "recommended": true, "summary": "Fond bleu nuit très sombre, action bleu clair, accent corail.", "why": "Garde la teinte du logo ; très bon contraste sur les photos de lagon.", "palette": {"theme": "dark", "base": "dark", "primitives": [{"name": "nuit-950", "hex": "#0A1D28", "source": "derived", "note": "fond"}, {"name": "nuit-850", "hex": "#12303F", "source": "derived", "note": "surface"}, {"name": "nuit-700", "hex": "#1E4559", "source": "derived", "note": "bordure"}, {"name": "brume-100", "hex": "#E6F3F7", "source": "derived", "note": "texte"}, {"name": "lagon-300", "hex": "#7CCBE0", "source": "derived", "note": "action"}, {"name": "corail-300", "hex": "#F08A64", "source": "derived", "note": "accent"}], "roles": {"bg": "nuit-950", "surface": "nuit-850", "text": "brume-100", "text-muted": "#9FBCC8", "primary": "lagon-300", "on-primary": "nuit-950", "primary-hover": "#A5DDEC", "accent": "corail-300", "on-accent": "nuit-950", "border": "nuit-700", "focus": "lagon-300", "success": "#4ADE80", "warning": "#FBBF24", "danger": "#FB7185", "info": "#93C5FD"}, "chart": ["#7CCBE0", "#F08A64", "#C4A1F0", "#4ADE80", "#F06292", "#F5C451"]}},
+        {"id": "ardoise", "title": "Ardoise chaude", "summary": "Brun très sombre, texte crème, action ambre.", "why": "Plus chaleureux, mais éloigné du bleu du logo.", "palette": {"theme": "dark", "base": "dark", "primitives": [{"name": "ardoise-950", "hex": "#17130F", "source": "proposed"}, {"name": "ardoise-900", "hex": "#241E18", "source": "proposed"}, {"name": "ardoise-700", "hex": "#3A3026", "source": "proposed"}, {"name": "creme-100", "hex": "#F3EBDD", "source": "proposed"}, {"name": "ambre-300", "hex": "#E9B872", "source": "proposed"}, {"name": "corail-300", "hex": "#F08A64", "source": "derived"}], "roles": {"bg": "ardoise-950", "surface": "ardoise-900", "text": "creme-100", "text-muted": "#B8A994", "primary": "ambre-300", "on-primary": "ardoise-950", "primary-hover": "#F2CD9A", "accent": "corail-300", "on-accent": "ardoise-950", "border": "ardoise-700", "focus": "ambre-300", "success": "#4ADE80", "warning": "#FBBF24", "danger": "#FB7185", "info": "#93C5FD"}}},
+        {"id": "encre", "title": "Encre profonde", "summary": "Bleu encre, action bleu pervenche, accent or.", "why": "Sérieux et sobre ; plus technologique.", "palette": {"theme": "dark", "base": "dark", "primitives": [{"name": "encre-950", "hex": "#0D1B2A", "source": "proposed"}, {"name": "encre-900", "hex": "#16293D", "source": "proposed"}, {"name": "encre-700", "hex": "#25405C", "source": "proposed"}, {"name": "givre-100", "hex": "#E4ECF5", "source": "proposed"}, {"name": "perv-300", "hex": "#8FB8FF", "source": "proposed"}, {"name": "or-300", "hex": "#F2C14E", "source": "proposed"}], "roles": {"bg": "encre-950", "surface": "encre-900", "text": "givre-100", "text-muted": "#A5B7CC", "primary": "perv-300", "on-primary": "encre-950", "primary-hover": "#B5D0FF", "accent": "or-300", "on-accent": "encre-950", "border": "encre-700", "focus": "perv-300", "success": "#4ADE80", "warning": "#FBBF24", "danger": "#FB7185", "info": "#93C5FD"}}}
+      ]
+    },
+    {
+      "id": "extra_themes",
+      "group": "Couleurs",
+      "kind": "palette",
+      "title": "Thèmes supplémentaires",
+      "why": "Un troisième thème n'a de sens que si la marque a vraiment un troisième visage (saison, campagne, co-marque). Chaque thème est un ensemble complet à dessiner, vérifier et maintenir.",
+      "proposals": [
+        {"id": "aucun", "title": "Aucun : clair et sombre suffisent", "recommended": true, "summary": "Deux thèmes, soignés tous les deux.", "why": "Moins à maintenir ; rien dans le brief ne demande un mode saisonnier.", "tokens": {"none": true}},
+        {"id": "ete", "title": "Mode « Cap sur l'été »", "summary": "Un thème clair chaud, activé pour les campagnes de haute saison.", "why": "Utile si les campagnes saisonnières ont leur propre identité ; à valider avec l'équipe marketing.", "extra_theme": {"id": "ete", "names": {"fr": "Été", "en": "Summer"}}, "palette": {"theme": "ete", "base": "light", "primitives": [{"name": "soleil-900", "hex": "#2A1F00", "source": "proposed"}, {"name": "soleil-700", "hex": "#B45309", "source": "proposed"}, {"name": "soleil-50", "hex": "#FFFBEB", "source": "proposed"}, {"name": "soleil-200", "hex": "#FDE9B4", "source": "derived"}, {"name": "corail-400", "hex": "#F2865E", "source": "logo", "input_id": "logo"}], "roles": {"bg": "soleil-50", "surface": "#FFFFFF", "text": "soleil-900", "text-muted": "#6B5B2E", "primary": "soleil-700", "on-primary": "#FFFFFF", "primary-hover": "soleil-900", "accent": "corail-400", "on-accent": "soleil-900", "border": "soleil-200", "focus": "soleil-700", "success": "#166534", "warning": "#92400E", "danger": "#BE123C", "info": "#1D4ED8"}}}
+      ]
+    },
+    {
+      "id": "typography",
+      "group": "Typographie et icônes",
+      "kind": "typography",
+      "title": "Typographie",
+      "why": "Deux familles au plus, libres de droits et auto-hébergées. L'aperçu utilise la police si elle est installée sur votre machine, sinon une police système proche : jugez le caractère, pas le détail.",
+      "proposals": [
+        {"id": "fraunces-inter", "title": "Fraunces et Inter", "recommended": true, "summary": "Un serif chaleureux à fort contraste pour les titres, un sans neutre pour le texte.", "why": "Reprend le serif de la planche d'ambiance ; Inter reste très lisible en petit.", "input_ids": ["board"], "typography": {"heading": "Fraunces", "body": "Inter", "accent": "Caveat", "fallback_heading": "Georgia, serif", "fallback_body": "system-ui, sans-serif", "fallback_accent": "cursive", "licence": "SIL OFL 1.1 (Fraunces, Inter, Caveat)", "sample_title": "Un séjour pensé pour vous", "sample_body": "Nous préparons votre voyage de A à Z : vols, adresses, rencontres. Un seul interlocuteur, avant et pendant le séjour."}},
+        {"id": "playfair-source", "title": "Playfair Display et Source Sans 3", "summary": "Un serif éditorial classique et un sans humaniste.", "why": "Plus classique et plus « magazine » ; moins de chaleur que Fraunces.", "typography": {"heading": "Playfair Display", "body": "Source Sans 3", "fallback_heading": "Georgia, serif", "fallback_body": "system-ui, sans-serif", "licence": "SIL OFL 1.1", "sample_title": "Un séjour pensé pour vous", "sample_body": "Nous préparons votre voyage de A à Z : vols, adresses, rencontres. Un seul interlocuteur, avant et pendant le séjour."}},
+        {"id": "dm", "title": "DM Serif Display et DM Sans", "summary": "Une paire dessinée ensemble : titres marqués, texte rond et clair.", "why": "Cohérent et moderne ; plus lisse, moins artisanal.", "typography": {"heading": "DM Serif Display", "body": "DM Sans", "fallback_heading": "Georgia, serif", "fallback_body": "system-ui, sans-serif", "licence": "SIL OFL 1.1", "sample_title": "Un séjour pensé pour vous", "sample_body": "Nous préparons votre voyage de A à Z : vols, adresses, rencontres. Un seul interlocuteur, avant et pendant le séjour."}}
+      ]
+    },
+    {
+      "id": "icons",
+      "group": "Typographie et icônes",
+      "kind": "icons",
+      "title": "Icônes",
+      "why": "Une seule bibliothèque libre pour tout le produit. Les trois propositions viennent des bibliothèques que le skill sait télécharger ; la liste d'icônes est celle du métier du voyage et pourra être complétée.",
+      "proposals": [
+        {"id": "lucide", "title": "Lucide (trait fin)", "recommended": true, "summary": "Trait de 2 px, bouts ronds, très large écosystème.", "why": "Beaucoup de métaphores de voyage (avion, boussole, valise, lit) ; trait sobre qui accompagne bien un serif.", "icons": {"set": "lucide", "licence": "ISC", "style": "outline", "motion": true, "names": ["plane", "map-pin", "compass", "luggage", "bed-double", "ticket", "calendar-days", "sun", "waves", "ship", "mountain", "camera", "utensils", "car", "credit-card", "receipt", "users", "phone", "mail", "message-circle", "star", "heart", "shield-check", "globe", "search", "bell", "settings", "download"]}},
+        {"id": "ph", "title": "Phosphor (duotone)", "summary": "Six graisses dont le duotone, plus doux.", "why": "Le duotone ajoute de la chaleur ; la graisse devient un jeton de design.", "icons": {"set": "ph", "licence": "MIT", "style": "duotone", "motion": true, "names": ["airplane-tilt", "map-pin", "compass", "suitcase-rolling", "bed", "ticket", "calendar", "sun", "waves", "boat", "mountains", "camera", "fork-knife", "car", "credit-card", "receipt", "users", "phone", "envelope", "chat-circle", "star", "heart", "shield-check", "globe", "magnifying-glass", "bell", "gear", "download-simple"]}},
+        {"id": "tabler", "title": "Tabler (trait, couverture large)", "summary": "Plus de 6 000 icônes, trait de 2 px.", "why": "Utile si l'application grandit vers la gestion (factures, entrepôts) ; plus technique d'allure.", "icons": {"set": "tabler", "licence": "MIT", "style": "outline", "motion": false, "names": ["plane", "map-pin", "compass", "luggage", "bed", "ticket", "calendar", "sun", "wave-sine", "sailboat", "mountain", "camera", "tools-kitchen-2", "car", "credit-card", "receipt", "users", "phone", "mail", "message-circle", "star", "heart", "shield-check", "world", "search", "bell", "settings", "download"]}}
+      ]
+    },
+    {
+      "id": "illustrations",
+      "group": "Images et animation",
+      "kind": "choice",
+      "title": "Illustrations",
+      "why": "Les illustrations occupent les états vides, les erreurs et les confirmations. Une seule famille, un seul mode, sinon le produit paraît assemblé.",
+      "proposals": [
+        {"id": "hairline-mono", "title": "Hairline monochrome", "recommended": true, "summary": "Figures au trait fin, une seule couleur, qui suivent le pointeur.", "why": "Discret, léger, cohérent avec le style éditorial ; fonctionne en clair et en sombre.", "details": {"Situations": ["aucune réservation", "boîte de réception vide", "aucun résultat", "page 404", "paiement confirmé"]}, "tokens": {"mode": "hairline-mono", "situations": ["aucune réservation", "boîte de réception vide", "aucun résultat", "page 404", "paiement confirmé"]}},
+        {"id": "hairline-colour", "title": "Hairline avec accent de couleur", "summary": "Le même trait, avec une touche de corail sur l'élément clé.", "why": "Plus vivant ; demande de surveiller le contraste du corail sur chaque fond.", "details": {"Situations": ["aucune réservation", "aucun résultat", "page 404", "paiement confirmé"]}, "tokens": {"mode": "hairline-colour", "situations": ["aucune réservation", "aucun résultat", "page 404", "paiement confirmé"]}}
+      ]
+    },
+    {
+      "id": "splash",
+      "group": "Images et animation",
+      "kind": "splash",
+      "title": "Splash et chargement",
+      "why": "L'ouverture de l'application est un SVG animé généré à partir du symbole du logo vectoriel. Sans logo SVG, il n'y a pas de splash : nous ne redessinons ni ne vectorisons jamais un logo.",
+      "proposals": [
+        {"id": "emblem", "title": "Emblème qui se dessine", "recommended": true, "summary": "Le symbole se trace au trait, se remplit, puis le nom apparaît. Moins de 1,6 s.", "why": "Sobre, rapide, fidèle au logo.", "input_ids": ["logo"]},
+        {"id": "scene", "title": "Scène", "summary": "Une courte scène dessinée (voile, vague) puis le nom.", "why": "Plus narratif, mais demande une illustration dédiée et dure plus longtemps."},
+        {"id": "domain", "title": "Saisie du nom de domaine", "summary": "Le nom de domaine se tape, lettre à lettre.", "why": "Original pour une marque numérique ; moins adapté à un voyagiste."},
+        {"id": "signature", "title": "Signature manuscrite", "summary": "Le nom s'écrit à la main avec la police d'accent.", "why": "Chaleureux, mais dépend d'une police d'accent livrée en SVG."}
+      ]
+    },
+    {
+      "id": "imagery",
+      "group": "Images et animation",
+      "kind": "choice",
+      "title": "Photos et images",
+      "why": "Dans le voyage, la photo vend. La règle de licence doit être posée dès le début : une photo sans droits web peut coûter plus que tout le design.",
+      "proposals": [
+        {"id": "photos-propres", "title": "Photos de l'agence, licences notées", "recommended": true, "summary": "Un registre : auteur, licence, date, usage autorisé, pour chaque photo.", "why": "Protège la marque ; permet d'afficher les crédits.", "input_ids": ["board"], "details": {"Règles": ["format 3:2 pour les cartes", "jamais de texte sur une photo sans voile", "crédit visible quand la licence l'exige"]}},
+        {"id": "banque", "title": "Banque d'images libres", "summary": "Photos sous licence libre, crédit affiché.", "why": "Rapide ; risque d'images déjà vues ailleurs.", "details": {"Règles": ["licence notée pour chaque image", "pas de visages identifiables sans autorisation"]}}
+      ]
+    },
+    {
+      "id": "shape",
+      "group": "Forme et mouvement",
+      "kind": "choice",
+      "title": "Formes et densité",
+      "why": "Rayons, espacements et élévation donnent le caractère des composants. La densité décide de la taille des lignes de tableau.",
+      "proposals": [
+        {"id": "genereux", "title": "Généreux", "recommended": true, "summary": "Rayons moyens, confortable, ombres légères.", "why": "Convient à un produit de réservation grand public.", "tokens": {"radius": {"sm": "6px", "md": "10px", "lg": "16px", "full": "999px"}, "density": "comfortable", "elevation": "légère"}},
+        {"id": "dense", "title": "Compact", "summary": "Rayons faibles, lignes de 40 px, pour un outil de gestion.", "why": "Pour l'équipe interne qui traite beaucoup de dossiers par jour.", "tokens": {"radius": {"sm": "4px", "md": "6px", "lg": "10px", "full": "999px"}, "density": "compact", "elevation": "aucune"}}
+      ]
+    },
+    {
+      "id": "motion",
+      "group": "Forme et mouvement",
+      "kind": "choice",
+      "title": "Niveau de mouvement",
+      "why": "Le mouvement guide l'œil ; trop de mouvement fatigue et gêne certains lecteurs. Le mode « réduire les animations » est respecté dans tous les cas.",
+      "proposals": [
+        {"id": "subtil", "title": "Subtil", "recommended": true, "summary": "Icônes animées au survol, transitions de 120 à 320 ms, un seul chargement en boucle.", "why": "Donne de la vie sans distraire.", "tokens": {"level": "subtle"}},
+        {"id": "minimal", "title": "Minimal", "summary": "Aucune animation décorative, seulement les transitions d'état.", "why": "Pour un outil très sobre.", "tokens": {"level": "minimal"}},
+        {"id": "expressif", "title": "Expressif", "summary": "Transitions de page, éléments qui apparaissent en cascade.", "why": "Spectaculaire ; plus coûteux à maintenir et à tester.", "tokens": {"level": "expressive"}}
+      ]
+    },
+    {
+      "id": "product",
+      "group": "Produit et périmètre",
+      "kind": "multi",
+      "title": "Écrans du produit",
+      "why": "Le type de produit choisit les paquets d'écrans. Cochez ce qui existera vraiment : chaque paquet devient des sections à concevoir.",
+      "proposals": [
+        {"id": "booking", "title": "Réservation de séjours", "recommended": true, "summary": "Disponibilités, parcours de réservation, calendrier, rappels.", "maps": {"kind": "module", "value": "booking"}},
+        {"id": "website", "title": "Site vitrine", "recommended": true, "summary": "Modèles de pages, blocs, formulaires, SEO.", "maps": {"kind": "module", "value": "website"}},
+        {"id": "content-editors", "title": "Éditeur de contenu", "recommended": true, "summary": "Pages et articles édités par l'équipe.", "maps": {"kind": "module", "value": "content-editors"}},
+        {"id": "portals", "title": "Espace voyageur", "recommended": true, "summary": "Dossier de voyage, documents, paiements, messages.", "maps": {"kind": "module", "value": "portals"}},
+        {"id": "quotes-invoices", "title": "Devis et factures", "summary": "Devis, acomptes, factures.", "maps": {"kind": "module", "value": "quotes-invoices"}},
+        {"id": "crm", "title": "CRM interne", "summary": "Contacts, pipeline, activités.", "maps": {"kind": "module", "value": "crm"}},
+        {"id": "loyalty", "title": "Fidélité", "summary": "Points, niveaux, parrainage.", "maps": {"kind": "module", "value": "loyalty"}},
+        {"id": "ecommerce", "title": "Boutique en ligne", "summary": "Catalogue, panier, paiement.", "maps": {"kind": "module", "value": "ecommerce"}}
+      ]
+    },
+    {
+      "id": "sections",
+      "group": "Produit et périmètre",
+      "kind": "multi",
+      "title": "Sections de la page",
+      "why": "Les sections de base sont toujours construites. Les autres sont facultatives : cochez celles qui servent le produit (les sections IA, e-mails, mobile, connexion, notifications sont traitées dans leurs propres sujets).",
+      "proposals": [
+        {"id": "core", "title": "Sections de base (toujours)", "locked": true, "recommended": true, "summary": "Aperçu, thème, couleurs, typographie, fondations, icônes, splash, illustrations, composants, accessibilité, intégration, notes.", "maps": {"kind": "section", "value": "core"}},
+        {"id": "logo", "title": "Logo", "recommended": true, "summary": "Variantes, zone de protection, mauvais usages.", "maps": {"kind": "section", "value": "logo", "title": "Logo", "icon": "badge", "reference": "references/sections.md"}},
+        {"id": "error-pages", "title": "Pages d'erreur", "recommended": true, "summary": "401, 403, 404, 500, 503 avec illustrations.", "maps": {"kind": "section", "value": "error-pages", "title": "Pages d'erreur", "icon": "triangle-alert", "reference": "references/illustrations-hairline.md"}},
+        {"id": "imagery", "title": "Images et crédits", "recommended": true, "summary": "Registre des photos et licences.", "maps": {"kind": "section", "value": "imagery", "title": "Images", "icon": "image", "reference": "references/imagery.md"}},
+        {"id": "motion", "title": "Mouvement", "summary": "Transitions de page, micro-interactions.", "maps": {"kind": "section", "value": "motion", "title": "Mouvement", "icon": "activity", "reference": "assets/icon-motion.css"}},
+        {"id": "backgrounds", "title": "Fonds et textures", "summary": "Dégradés, textures pour connexion et accueil.", "maps": {"kind": "section", "value": "backgrounds", "title": "Fonds", "icon": "layers", "reference": "references/sections.md"}},
+        {"id": "avatars", "title": "Avatars", "summary": "Personnes, organisations, système.", "maps": {"kind": "section", "value": "avatars", "title": "Avatars", "icon": "circle-user", "reference": "references/ai-ux.md"}},
+        {"id": "charts", "title": "Graphiques", "summary": "Tableaux de bord et rapports.", "maps": {"kind": "section", "value": "charts", "title": "Graphiques", "icon": "chart-column", "reference": "references/components.md"}},
+        {"id": "widgets", "title": "Widgets d'en-tête", "summary": "Météo du lieu, heure locale, recherche.", "maps": {"kind": "section", "value": "widgets", "title": "Widgets", "icon": "layout-grid", "reference": "references/sections.md"}},
+        {"id": "search", "title": "Recherche", "summary": "Recherche classique et en langage libre.", "maps": {"kind": "section", "value": "search", "title": "Recherche", "icon": "search", "reference": "references/search.md"}}
+      ]
+    },
+    {
+      "id": "editions",
+      "group": "Produit et périmètre",
+      "kind": "choice",
+      "title": "Éditions et formules",
+      "why": "Les éditions font apparaître des badges « Pro » et des limites dans les écrans. Ne rien afficher est préférable à inventer des limites.",
+      "proposals": [
+        {"id": "une", "title": "Une seule édition", "recommended": true, "summary": "Aucun badge de formule dans les écrans.", "why": "Rien dans le brief n'annonce plusieurs formules."},
+        {"id": "deux", "title": "Deux formules", "summary": "Une formule de base et une formule complète, avec badges.", "why": "À choisir si le contenu des formules est déjà décidé.", "fields": [{"key": "plans", "label": "Noms et contenu des formules", "type": "textarea", "value": "", "hint": "À remplir : nous n'inventons pas de limites."}]}
+      ]
+    },
+    {
+      "id": "platforms",
+      "group": "Produit et périmètre",
+      "kind": "multi",
+      "title": "Mobile et objets connectés",
+      "why": "Le mobile est un contexte d'usage, pas une réduction du bureau : barre du bas, feuilles, hors ligne. Une montre n'a de sens que pour un usage précis (billet, guide).",
+      "proposals": [
+        {"id": "mobile", "title": "Mobile et PWA", "recommended": true, "summary": "Vues téléphone, barre du bas, hors ligne, installation.", "maps": {"kind": "feature", "value": "mobile"}},
+        {"id": "wearables", "title": "Montre connectée", "summary": "Billet au poignet, guide du jour.", "maps": {"kind": "feature", "value": "wearables"}}
+      ]
+    },
+    {
+      "id": "ai",
+      "group": "Produit et périmètre",
+      "kind": "choice",
+      "title": "Assistant IA",
+      "why": "Un assistant change la forme du produit : conversation, actions proposées, validation par la personne. Mieux vaut décider tôt ce qu'il peut faire seul.",
+      "proposals": [
+        {"id": "non", "title": "Pas d'assistant", "recommended": true, "summary": "Rien à concevoir pour l'IA pour l'instant.", "why": "Rien dans le brief ne le demande.", "tokens": {"none": true}},
+        {"id": "conseiller", "title": "Assistant qui conseille", "summary": "Répond aux questions sur les séjours, ne modifie rien.", "why": "Faible risque ; utile pour réduire les questions simples.", "fields": [{"key": "name", "label": "Nom de l'assistant", "value": ""}, {"key": "may", "label": "Ce qu'il peut faire", "type": "textarea", "value": "Répondre aux questions sur les séjours publiés. Ne rien modifier."}], "maps": {"kind": "feature", "value": "ai"}},
+        {"id": "agent", "title": "Assistant qui prépare, vous validez", "summary": "Prépare un devis ou une réservation, la personne confirme chaque action.", "why": "Plus utile, plus de règles (approbation, journal d'activité).", "fields": [{"key": "name", "label": "Nom de l'assistant", "value": ""}, {"key": "may", "label": "Ce qu'il peut faire", "type": "textarea", "value": "Préparer un devis ; la réservation n'est jamais confirmée sans clic de la personne."}], "maps": {"kind": "feature", "value": "ai"}}
+      ]
+    },
+    {
+      "id": "comms",
+      "group": "Produit et périmètre",
+      "kind": "multi",
+      "title": "E-mails, signatures et messages",
+      "why": "Les messages sont une partie du produit que le client lit plus souvent que les écrans. Ils partagent le ton de la voix.",
+      "proposals": [
+        {"id": "emails", "title": "E-mails de transaction", "recommended": true, "summary": "Confirmation, rappel de départ, facture.", "maps": {"kind": "feature", "value": "emails"}},
+        {"id": "signatures", "title": "Signatures d'e-mail", "summary": "Modèle de signature pour l'équipe.", "maps": {"kind": "feature", "value": "signatures"}},
+        {"id": "messaging", "title": "Modèles de messagerie", "summary": "Messages WhatsApp et SMS.", "maps": {"kind": "feature", "value": "messaging"}}
+      ]
+    },
+    {
+      "id": "notifications",
+      "group": "Produit et périmètre",
+      "kind": "choice",
+      "title": "Notifications",
+      "why": "Le bon niveau de notification dépend de la fréquence des événements : quelques-uns par semaine ne justifient pas un centre d'activité.",
+      "proposals": [
+        {"id": "toasts", "title": "Messages discrets", "recommended": true, "summary": "Messages brefs en bas de l'écran, sans centre d'activité.", "why": "Peu d'événements par semaine.", "maps": {"kind": "feature", "value": "notifications"}},
+        {"id": "centre", "title": "Centre d'activité", "summary": "Une liste de tout ce qui est arrivé, avec états lu / non lu.", "why": "Utile pour l'équipe interne.", "maps": {"kind": "feature", "value": "notifications"}},
+        {"id": "aucune", "title": "Aucune au-delà des e-mails", "summary": "Aucune notification dans l'application.", "why": "Plus simple.", "tokens": {"none": true}}
+      ]
+    },
+    {
+      "id": "auth",
+      "group": "Produit et périmètre",
+      "kind": "multi",
+      "title": "Connexion",
+      "why": "Les voyageurs ouvrent leur compte rarement : un mot de passe est souvent oublié. Cochez les moyens de connexion à concevoir (écrans, erreurs, récupération).",
+      "proposals": [
+        {"id": "magic-link", "title": "Lien magique par e-mail", "recommended": true, "summary": "Aucun mot de passe à retenir.", "maps": {"kind": "feature", "value": "magic-link"}},
+        {"id": "password", "title": "E-mail et mot de passe", "recommended": true, "summary": "Classique, avec récupération.", "maps": {"kind": "feature", "value": "password"}},
+        {"id": "google", "title": "Compte Google", "summary": "Connexion en un clic.", "maps": {"kind": "feature", "value": "google"}},
+        {"id": "passkey", "title": "Clé d'accès (passkey)", "summary": "Empreinte ou visage de l'appareil.", "maps": {"kind": "feature", "value": "passkey"}}
+      ]
+    },
+    {
+      "id": "accessibility",
+      "group": "Cadre",
+      "kind": "choice",
+      "title": "Accessibilité",
+      "why": "Le niveau visé fixe les seuils de contraste, la taille des cibles et les tests. Le bouton d'accessibilité adapte la page par-dessus, il ne remplace jamais ces bases.",
+      "proposals": [
+        {"id": "aa", "title": "WCAG 2.2 niveau AA", "recommended": true, "summary": "Le niveau habituel : contraste 4,5:1, cibles de 24 px, navigation clavier.", "why": "Norme de référence pour un service grand public.", "tokens": {"target": "WCAG 2.2 AA"}},
+        {"id": "aa-plus", "title": "AA avec texte en AAA", "summary": "Contraste 7:1 pour le texte courant.", "why": "Plus exigeant ; utile si la clientèle est âgée.", "tokens": {"target": "WCAG 2.2 AA, text AAA"}}
+      ]
+    },
+    {
+      "id": "priorities",
+      "group": "Cadre",
+      "kind": "choice",
+      "title": "Priorités et échéance",
+      "why": "Elles décident de l'ordre de construction et de ce qu'on laisse pour la suite.",
+      "proposals": [
+        {"id": "reservation", "title": "Le parcours de réservation d'abord", "recommended": true, "summary": "Le parcours de réservation et l'espace voyageur avant le reste.", "why": "C'est ce qui génère du chiffre d'affaires.", "fields": [{"key": "deadline", "label": "Échéance", "value": ""}, {"key": "first", "label": "Premiers écrans", "type": "textarea", "value": "Choix du séjour, calendrier, paiement, confirmation"}]},
+        {"id": "marque", "title": "La marque et le site d'abord", "summary": "Les fondations et le site vitrine avant l'application.", "why": "Utile si le lancement est une campagne.", "fields": [{"key": "deadline", "label": "Échéance", "value": ""}, {"key": "first", "label": "Premiers écrans", "type": "textarea", "value": "Accueil, fiche séjour, formulaire de contact"}]}
+      ]
+    }
+  ],
+  "open_questions": [
+    "Les photos de la planche d'ambiance ont-elles une licence d'usage web ?",
+    "Existe-t-il une version du logo pour fond sombre ?",
+    "Le nom de domaine définitif est-il décidé ?"
+  ]
+}

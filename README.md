@@ -38,18 +38,24 @@ Demandez simplement, par exemple :
 - « Fais-moi le design system du site de la boulangerie, avec les emails des formulaires. »
 
 Claude suit les étapes du skill :
-1. découverte (il pose les questions qui manquent) ;
-2. projet de départ, couleurs, icônes ;
-3. sections, build ;
-4. traductions ;
-5. vérifications ;
-6. captures d'écran qu'il regarde avant de dire que c'est fini.
+1. découverte (il demande d'abord les langues, lit toutes les images fournies et en tire les couleurs exactes) ;
+2. **page de plan** : il propose, tu choisis, il construit à partir de ton export (voir ci-dessous) ;
+3. projet de départ, couleurs, icônes ;
+4. sections, build ;
+5. traductions ;
+6. vérifications ;
+7. captures d'écran qu'il regarde avant de dire que c'est fini.
+
+**Toujours planifier d'abord.** Avant le moindre fichier, Claude étudie la marque et le métier, puis écrit des propositions sur chaque sujet (langues, ton, style visuel, palettes claire et sombre, typographie, icônes libres adaptées au métier, illustrations, splash, écrans, assistant IA, accessibilité…). Il les rend dans **une seule page interactive** (`plan/plan.html`, autonome, hors ligne, utilisable dans un Artifact claude.ai) : tu choisis, tu modifies les teintes (les contrastes se recalculent), tu commentes, puis « Exporter mes réponses » produit `ds.plan.json` (téléchargement, copie, ou texte toujours visible). Tu redonnes ce fichier à Claude Code ; `scripts/apply_plan.py` crée ou met à jour le projet (`ds.config.json`, `notes/plan.md` avec chaque décision et sa raison, les questions ouvertes) et Claude construit à partir de là. Le splash et le chargeur animés ne se font qu'à partir d'un logo **SVG** : avec un logo en PNG ou JPG, il n'y a pas de splash, et le logo n'est jamais redessiné.
 
 Pour un gros design system, il peut répartir les sections entre plusieurs agents.
 
 ## Les commandes, si vous voulez les lancer à la main
 
 ```bash
+python scripts/image_facts.py logo.png brand-board.jpg   # couleurs mesurées, logo vectoriel ou non
+python scripts/plan_page.py plan/proposals.json          # → plan/plan.html (la page de plan)
+python scripts/apply_plan.py ../acme ds.plan.json --proposals plan/proposals.json
 python scripts/new_project.py ../acme --name "Acme" --type crm --langs fr,it,en --source fr
 python scripts/fetch_icons.py sets                       # les meilleures bibliothèques d'icônes, licences en direct
 python scripts/fetch_icons.py get ../acme lucide house mail

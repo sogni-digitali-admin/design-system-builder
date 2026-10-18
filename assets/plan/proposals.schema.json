@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-system-builder/proposals.schema.json",
+  "title": "Plan proposals (plan_version 1)",
+  "description": "What Claude proposes before building: one object per topic, 2-4 cards each (more for checklists), one recommended. plan_page.py renders it as one page; the answers come back as ds.plan.json.",
+  "type": "object",
+  "required": ["plan_version", "lang", "project", "topics"],
+  "additionalProperties": false,
+  "properties": {
+    "plan_version": {"const": 1},
+    "lang": {
+      "enum": ["fr", "en", "it", "es", "de"],
+      "description": "Language of the page and of every text below: the language the person asked to read the plan in. It is usually the source language."
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "slug", "type", "langs", "source_lang"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "crm, saas, website, ecommerce, booking, mobile-app or other"
+        },
+        "langs": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z][a-z]$"}},
+        "source_lang": {"type": "string", "pattern": "^[a-z][a-z]$"},
+        "intro": {"type": "string", "description": "One or two sentences shown under the page title."}
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/input"},
+      "description": "Every file the person gave, read and summarised (see plan/inputs.md)."
+    },
+    "topics": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/topic"}},
+    "open_questions": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "hex": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+    "textList": {"type": "array", "items": {"type": "string"}},
+    "input": {
+      "type": "object",
+      "required": ["id", "file", "kind", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "file": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["logo", "brand-board", "ui-screenshot", "photo", "sketch", "competitor", "document", "other"]},
+        "summary": {"type": "string", "minLength": 1, "description": "What it is and what was seen, in the page language."},
+        "vector": {"type": "boolean", "description": "Logos: true only for an SVG. A raster logo means no splash."},
+        "format": {"type": "string"},
+        "colours": {
+          "type": "array",
+          "description": "Measured with scripts/image_facts.py, never guessed by eye.",
+          "items": {
+            "type": "object",
+            "required": ["hex"],
+            "additionalProperties": false,
+            "properties": {"hex": {"$ref": "#/$defs/hex"}, "share": {"type": "number"}, "note": {"type": "string"}}
+          }
+        },
+        "typefaces": {"$ref": "#/$defs/textList"},
+        "implications": {"$ref": "#/$defs/textList"},
+        "uncertainties": {"$ref": "#/$defs/textList"},
+        "preview": {"type": "string", "description": "data: URI thumbnail, added by plan_page.py --embed-inputs."}
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["key", "label", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {"$ref": "#/$defs/id"},
+        "label": {"type": "string"},
+        "type": {"enum": ["text", "textarea", "select"]},
+        "value": {"type": "string"},
+        "hint": {"type": "string"},
+        "options": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "palette": {
+      "type": "object",
+      "required": ["primitives", "roles"],
+      "additionalProperties": false,
+      "properties": {
+        "theme": {"type": "string", "description": "light, dark or the id of an extra theme."},
+        "base": {"enum": ["light", "dark"]},
+        "primitives": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["name", "hex", "source"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"$ref": "#/$defs/id"},
+              "hex": {"$ref": "#/$defs/hex"},
+              "source": {"enum": ["logo", "sheet", "derived", "proposed"]},
+              "input_id": {"$ref": "#/$defs/id"},
+              "note": {"type": "string"}
+            }
+          }
+        },
+        "roles": {
+          "type": "object",
+          "required": [
+            "bg",
+            "surface",
+            "text",
+            "text-muted",
+            "primary",
+            "on-primary",
+            "primary-hover",
+            "accent",
+            "border",
+            "focus",
+            "success",
+            "warning",
+            "danger",
+            "info"
+          ],
+          "additionalProperties": {"type": "string"},
+          "description": "ds.config.json theme keys: a primitive name or a hex. on-accent is optional."
+        },
+        "chart": {"type": "array", "items": {"$ref": "#/$defs/hex"}}
+      }
+    },
+    "typography": {
+      "type": "object",
+      "required": ["heading", "body", "licence"],
+      "additionalProperties": false,
+      "properties": {
+        "heading": {"type": "string"},
+        "body": {"type": "string"},
+        "accent": {"type": "string"},
+        "fallback_heading": {"type": "string"},
+        "fallback_body": {"type": "string"},
+        "fallback_accent": {"type": "string"},
+        "licence": {"type": "string"},
+        "sample_title": {"type": "string"},
+        "sample_body": {"type": "string"}
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": ["family", "radius", "border", "shadow", "density", "ink", "surface", "bg_worst", "btn_bg", "btn_fg"],
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "enum": [
+            "minimalist",
+            "glass",
+            "soft",
+            "editorial",
+            "playful",
+            "brutalist",
+            "corporate",
+            "glass-lite",
+            "material",
+            "other"
+          ]
+        },
+        "radius": {"type": "object", "required": ["sm", "md", "lg"], "additionalProperties": {"type": "string"}},
+        "border": {"type": "string"},
+        "shadow": {"type": "string"},
+        "blur": {"type": "string"},
+        "density": {"enum": ["comfortable", "compact"]},
+        "ink": {"$ref": "#/$defs/hex"},
+        "surface": {"$ref": "#/$defs/hex"},
+        "surface_alpha": {"type": "number", "minimum": 0, "maximum": 1},
+        "bg_worst": {
+          "$ref": "#/$defs/hex",
+          "description": "The worst background the surface can sit on: contrast is computed against it."
+        },
+        "btn_bg": {"$ref": "#/$defs/hex"},
+        "btn_fg": {"$ref": "#/$defs/hex"}
+      }
+    },
+    "icons": {
+      "type": "object",
+      "required": ["set", "licence", "style", "names"],
+      "additionalProperties": false,
+      "properties": {
+        "set": {
+          "enum": [
+            "lucide",
+            "tabler",
+            "ph",
+            "hugeicons",
+            "iconoir",
+            "heroicons",
+            "ri",
+            "mingcute",
+            "material-symbols",
+            "fluent",
+            "carbon",
+            "bi",
+            "radix-icons",
+            "solar"
+          ],
+          "description": "A prefix of RECOMMENDED in scripts/fetch_icons.py."
+        },
+        "licence": {"type": "string"},
+        "style": {"enum": ["outline", "duotone", "filled", "mixed"]},
+        "motion": {"type": "boolean"},
+        "names": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9=:-]*$"}}
+      }
+    },
+    "maps": {
+      "type": "object",
+      "required": ["kind", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["module", "section", "feature"]},
+        "value": {"type": "string"},
+        "title": {"type": "string"},
+        "icon": {"type": "string"},
+        "reference": {"type": "string"}
+      }
+    },
+    "card": {
+      "type": "object",
+      "required": ["id", "title", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "recommended": {"type": "boolean"},
+        "shortlist": {"type": "boolean", "description": "false: shown collapsed under the other options."},
+        "locked": {"type": "boolean", "description": "multi topics: always included, cannot be unticked."},
+        "why": {"type": "string", "description": "Why this fits the brand and the trade."},
+        "details": {"type": "object", "additionalProperties": {"type": ["string", "array"], "items": {"type": "string"}}},
+        "input_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+        "fields": {"type": "array", "items": {"$ref": "#/$defs/field"}},
+        "tokens": {"type": "object", "description": "Values written to ds.config.json as they are (radius, density, level...)."},
+        "palette": {"$ref": "#/$defs/palette"},
+        "typography": {"$ref": "#/$defs/typography"},
+        "style": {"$ref": "#/$defs/style"},
+        "icons": {"$ref": "#/$defs/icons"},
+        "maps": {"$ref": "#/$defs/maps"},
+        "extra_theme": {
+          "type": "object",
+          "required": ["id", "names"],
+          "additionalProperties": false,
+          "properties": {"id": {"$ref": "#/$defs/id"}, "names": {"type": "object", "additionalProperties": {"type": "string"}}}
+        }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "required": ["id", "kind", "title", "why", "proposals"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "group": {"type": "string", "description": "Heading the topic is listed under."},
+        "kind": {"enum": ["choice", "multi", "palette", "typography", "style", "icons", "splash"]},
+        "title": {"type": "string", "minLength": 1},
+        "why": {"type": "string", "minLength": 1, "description": "Why this matters, in two or three sentences."},
+        "proposals": {"type": "array", "minItems": 2, "maxItems": 14, "items": {"$ref": "#/$defs/card"}},
+        "allow_other": {"type": "boolean"},
+        "notes": {"type": "boolean"},
+        "preselected": {
+          "type": "string",
+          "description": "Card id already chosen (and counted decided) when the page opens: an answer the person gave in the conversation. Still editable."
+        }
+      }
+    }
+  }
+}
