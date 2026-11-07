@@ -207,13 +207,15 @@ def theme_control(cfg: dict) -> str:
 
 def runtime_js(cfg: dict, project: Path) -> str:
     conf = {"slug": cfg["slug"], "source": cfg["source_lang"], "langs": cfg["langs"], "themes": TK.theme_ids(cfg),
-            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied"), **theme_labels(cfg)},
+            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied"), **theme_labels(cfg),
+                       "phone": TK.phone_labels(cfg)},
             "a11yCss": TK.a11y_css(cfg)}
     dict_path = project / "i18n" / "dict.json"
     data = json.loads(read(dict_path)) if dict_path.exists() else {}
     js = "window.DS = %s;\nwindow.DSI18n = %s;\n" % (json.dumps(conf, ensure_ascii=False),
                                                    json.dumps(data, ensure_ascii=False, separators=(",", ":")))
-    for name in ("doc.js", "hairline-mount.js", "a11y.js", "i18n.js"):
+    # phone.js last: it moves the controls the others have wired, and reads one section at a time below 760 px
+    for name in ("doc.js", "hairline-mount.js", "a11y.js", "i18n.js", "phone.js"):
         js += "\n" + read(ASSETS / "runtime" / name)
     return script_safe(js)
 

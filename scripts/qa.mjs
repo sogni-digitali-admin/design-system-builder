@@ -3,7 +3,7 @@
 // all = console + requests + mobile + a11y + i18n (exit code 1 on any FAIL). shots writes PNGs you must then open and look at.
 import { readFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { launch, openPage, scrollThrough, fileUrl } from "./_browser.mjs";
+import { launch, openPage, scrollThrough, fileUrl, sectionIds, openSection } from "./_browser.mjs";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
@@ -61,22 +61,70 @@ async function checkRequests(b) {
   await page.close();
 }
 
-async function checkMobile(b) {
-  console.log("\n# phone width 390 px: no sideways page scroll");
-  for (const theme of THEMES) {
-    const { page } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
+// Width of the page and the elements that push past it (the open section only: hidden ones measure 0).
+const measureWidth = (page) => page.evaluate(() => {
+  const W = document.documentElement.clientWidth, bad = [];
+  const clipped = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { if (getComputedStyle(p).overflowX !== "visible") return true; } return false; };
+  document.querySelectorAll("main *").forEach((e) => {
+    const b = e.getBoundingClientRect();
+    if (b.width > 0 && b.right > W + 1 && !clipped(e)) bad.push(`${e.tagName.toLowerCase()}${e.id ? "#" + e.id : ""}.${String(e.className).split(" ")[0]} in #${e.closest("section")?.id}:${Math.round(b.right)}`);
+  });
+  return { scrollW: document.documentElement.scrollWidth, scrollH: document.documentElement.scrollHeight, W, bad: [...new Set(bad)].slice(0, 10) };
+});
+
+// On a phone the page shows one section at a time (runtime/phone.js): open each one and measure it; the worst wins.
+async function eachSection(page, measure, onEach) {
+  let worst = null, tallest = 0;
+  for (const id of await sectionIds(page)) {
+    await openSection(page, id);
     await scrollThrough(page);
-    const r = await page.evaluate(() => {
-      const W = document.documentElement.clientWidth, bad = [];
-      const clipped = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { if (getComputedStyle(p).overflowX !== "visible") return true; } return false; };
-      document.querySelectorAll("main *").forEach((e) => {
-        const b = e.getBoundingClientRect();
-        if (b.width > 0 && b.right > W + 1 && !clipped(e)) bad.push(`${e.tagName.toLowerCase()}${e.id ? "#" + e.id : ""}.${String(e.className).split(" ")[0]} in #${e.closest("section")?.id}`);
-      });
-      return { scrollW: document.documentElement.scrollWidth, W, bad: [...new Set(bad)].slice(0, 10) };
-    });
+    const one = await measure(page);
+    tallest = Math.max(tallest, one.scrollH || 0);
+    if (!worst || one.scrollW > worst.scrollW) worst = one;
+    if (onEach) await onEach(id);
+  }
+  return { ...worst, tallest };
+}
+
+// Visible controls under 44 px (WCAG 2.5.8 wants 24; 44 is the bar this page sets itself on phones). Inline links in prose are exempt.
+const smallTargets = (page) => page.evaluate(() => {
+  const out = [];
+  document.querySelectorAll("main :is(button, input, select, textarea, summary, [role=button], [role=tab], a.btn, a.chip)").forEach((e) => {
+    if (e.type === "hidden" || e.closest("[hidden], [inert], [aria-hidden=true]")) return;
+    const b = e.getBoundingClientRect();
+    if (b.width && b.height && (b.height < 44 || b.width < 44) && !(e.type === "checkbox" || e.type === "radio"))
+      out.push(`${e.tagName.toLowerCase()}.${String(e.className).split(" ")[0] || "-"}:${Math.round(b.width)}x${Math.round(b.height)}`);
+  });
+  return out;
+});
+
+async function checkMobile(b) {
+  console.log("\n# phone width 390 px: one section at a time, a menu, no sideways scroll, finger-sized targets");
+  for (const theme of THEMES) {
+    const { page, errors } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
+    const ids = await sectionIds(page), small = [];
+    const r = await eachSection(page, measureWidth, async (id) => { for (const s of await smallTargets(page)) small.push(`${s} in #${id}`); });
     if (r.scrollW > r.W) fail(`${theme}: page is ${r.scrollW}px wide for ${r.W}px · ${r.bad.join(", ")}`);
-    else console.log(`  ok ${theme}: ${r.scrollW}px`);
+    else console.log(`  ok ${theme}: ${r.scrollW}px wide, ${ids.length} sections opened, tallest ${r.tallest}px`);
+    // the phone runtime: one displayed section, a menu that opens (and closes on Esc, returning focus), previous / next
+    const ph = await page.evaluate(() => ({
+      one: document.documentElement.classList.contains("ds-one"), shown: document.querySelectorAll("#main > section.is-one").length,
+      menu: !!document.querySelector(".top-menu"), pn: document.querySelectorAll(".ds-pn a").length,
+      dupIds: (() => { const seen = {}, dup = new Set(); document.querySelectorAll("#main > section.is-one svg [id]").forEach((e) => { if (seen[e.id]) dup.add(e.id); seen[e.id] = 1; }); return [...dup]; })(),
+    }));
+    if (ids.length >= 2 && (!ph.one || ph.shown !== 1 || !ph.menu || ph.pn < 1)) fail(`${theme}: phone reading is off (ds-one ${ph.one}, ${ph.shown} section shown, menu ${ph.menu}, ${ph.pn} previous/next links)`);
+    if (ph.dupIds.length) fail(`${theme}: duplicate SVG ids inside the open section (icons would paint empty): ${ph.dupIds.slice(0, 5).join(", ")}`);
+    if (ph.menu) {
+      await page.click(".top-menu");
+      await page.waitForTimeout(300);
+      const open = await page.evaluate(() => document.documentElement.classList.contains("ds-menu") && document.activeElement?.classList.contains("side-sheet-x"));
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+      const closed = await page.evaluate(() => !document.documentElement.classList.contains("ds-menu") && document.activeElement?.classList.contains("top-menu"));
+      if (!open || !closed) fail(`${theme}: the phone menu did not open on tap, or Esc did not close it and return focus`);
+    }
+    if (small.length) console.log(`  WARN ${theme}: ${small.length} controls under 44 px · ${JSON.stringify([...new Set(small)].slice(0, 8))}`);
+    errors.forEach((e) => fail(`${theme} 390: ${e.slice(0, 240)}`));
     await page.close();
   }
 }
@@ -126,19 +174,10 @@ async function checkA11y(b) {
     const has = await page.evaluate(() => !!(window.DSA11y && window.DSA11y.element));
     if (!has) { console.log("  skip: no <ds-a11y> on the page"); await page.close(); return; }
     await page.evaluate(() => { const el = window.DSA11y.element; el.prefs = Object.assign({}, el.prefs, { text: 200 }); });
-    await scrollThrough(page);
     await page.waitForTimeout(1500);
-    const r = await page.evaluate(() => {
-      const W = document.documentElement.clientWidth, bad = [];
-      const clipped = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { if (getComputedStyle(p).overflowX !== "visible") return true; } return false; };
-      document.querySelectorAll("main *").forEach((e) => {
-        const box = e.getBoundingClientRect();
-        if (box.width > 0 && box.right > W + 1 && !clipped(e)) bad.push(`${e.tagName.toLowerCase()}.${String(e.className).split(" ")[0]} in #${e.closest("section")?.id}:${Math.round(box.right)}`);
-      });
-      return { sw: document.documentElement.scrollWidth, W, bad: [...new Set(bad)].slice(0, 8) };
-    });
-    if (r.sw > r.W) fail(`${theme} 200 %: page is ${r.sw}px wide for ${r.W}px · ${r.bad.join(", ")}`);
-    else console.log(`  ok ${theme} 200 %: ${r.sw}px`);
+    const r = await eachSection(page, measureWidth);
+    if (r.scrollW > r.W) fail(`${theme} 200 %: page is ${r.scrollW}px wide for ${r.W}px · ${r.bad.join(", ")}`);
+    else console.log(`  ok ${theme} 200 %: ${r.scrollW}px, every section`);
     await page.keyboard.press("Alt+KeyA");
     await page.waitForTimeout(400);
     const open = await page.evaluate(() => window.DSA11y.element.isOpen === true);
@@ -159,10 +198,10 @@ async function shots(b) {
   for (const [w, h] of [[1360, 1000], [390, 844]]) for (const theme of THEMES) for (const lang of langs) {
     const { page } = await openPage(b, file, { ...base, theme, lang, width: w, height: h });
     for (const id of ids) {
-      const el = await page.$("#" + id);
-      if (!el) { fail("no section #" + id); continue; }
-      await el.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(500);
+      if (!(await page.$("#" + id))) { fail("no section #" + id); continue; }
+      await openSection(page, id); // on the phone the section must be opened first: a hidden one cannot be scrolled to
+      await page.waitForTimeout(400);
+      // the viewport, after a real scroll: an element capture can come back blank when rendering is deferred
       await page.screenshot({ path: join(out, `${id}-${w}-${theme}-${lang}.png`) });
     }
     await page.close();

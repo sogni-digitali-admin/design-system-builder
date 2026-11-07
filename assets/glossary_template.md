@@ -15,7 +15,9 @@ keyboard keys, emojis. A string that is only a name, code or number comes back u
 | (one row per product term: lead, quote, booking, order, cart, page, block, draft, publish…) | | |
 
 ## Style
-- Register: (e.g. Italian informal "tu" in the interface; client emails keep the formal form if the source uses it.)
+- Register, decided with the client at discovery, one line per language with an example sentence
+  (e.g. fr "vous" · it "Lei" · de "Sie" · en neutral "you"); interface, e-mails and AI assistant named separately
+  if they differ. Exceptions: slogans and taglines keep the brand's own wording; legal text follows the lawyer.
 - Punctuation: French puts a space before : ; ? ! — other languages do not. Quotes per language («…», "…", „…“).
 - Numbers and money: written in the source format in the page; the runtime re-formats amounts per language,
   so never translate a figure by hand. Dates in words follow the target language (jeudi 9 octobre → Thursday 9 October).

@@ -17,6 +17,7 @@ Ask in one short message, with a recommended default for each, so the person can
 |---|---|---|
 | What is the product? (CRM, website, shop, booking, SaaS tool, mobile app, mix) | picks the screen packs in `modules/` | the closest pack + say so |
 | Which languages, and which one is the source? | the whole page is written in the source and translated | the person's language as source |
+| Form of address per language (fr vous/tu, it Lei/voi/tu, de Sie/du…), for the interface and for the e-mails; do slogans keep their own? | every string is written in it; changing it later means re-reading them all (`references/i18n.md`) | formal in the interface and e-mails; slogans keep the brand's wording |
 | Editions / plans and what each includes | badges "Pro only", limits shown in screens | none shown |
 | Which screens matter most? | the module sections go deep on those | the pack's first three screens |
 | Brand assets you may use (logo, fonts, photos) and their licences | the page ships them | logo only, open fonts |

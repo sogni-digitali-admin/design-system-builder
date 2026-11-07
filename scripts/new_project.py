@@ -20,6 +20,9 @@ import shutil
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+from _text import write_text  # noqa: E402
+
 SKILL = Path(__file__).resolve().parent.parent
 STARTER = SKILL / "assets" / "starter"
 
@@ -122,7 +125,7 @@ def main() -> None:
     for f in STARTER.glob("*.*"):
         shutil.copy2(f, project / "parts" / f.name)
     shutil.copy2(SKILL / "assets" / "glossary_template.md", project / "i18n" / "glossary.md")
-    (project / "ds.config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_text(project / "ds.config.json", json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
     print("created %s" % project)
     print("note: no logo yet. The splash is a scaffold placeholder; set logo.mark to an SVG, or remove the splash section when the logo is raster.")
     print("next:\n  python %s/scripts/fetch_icons.py get \"%s\" lucide %s"
