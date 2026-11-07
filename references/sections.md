@@ -2,6 +2,7 @@
 
 The core sections come from `new_project.py` (`assets/starter/`). Optional sections are written when the product
 needs them. Each entry says what it must contain to be "done". Order in `ds.config.json` = order on the page.
+A system with many sections also reads "Large systems" at the end of this file (deferred scripts, navigation groups).
 
 ## Core (always)
 
@@ -53,3 +54,54 @@ For each product area (e.g. "Products"): an in-section summary (chips linking to
    mapping to the backend model (field names) when there is one.
 Make the demos interactive where it explains behaviour (a filter that filters, a dialog that opens and returns
 focus), and static where it does not.
+
+## Large systems: deferred scripts and navigation groups
+
+Twelve sections behave exactly as before. These two mechanisms exist for thirty or sixty, and both are built in.
+
+### Section scripts start late (`runtime/defer.js`)
+The build (`parts_js` in `build.py`) emits one `<script>` per section, so an exception stays in its section, and wraps
+each `parts/<id>.js` in `dsDefer("<id>", function () { … })`. The wrapped script starts the first time one of these
+happens: the section comes within 1.5 screens of the viewport; the URL hash points at the section or at an anchor
+inside it (at load or on `hashchange`); the phone runtime shows the section (`phone.js` calls `dsStart(id)`). A
+section nobody reaches never starts, which is the point: starting them all at load kept the browser busy for seconds.
+Exceptions, started at load as plain scripts: the first two sections (they are on screen anyway) and the ids listed in
+`ds.config.json → eager_sections`.
+
+What a part must know:
+- **No measurement at start.** An eager part runs before layout at phone width (its box is 0 wide); a deferred one
+  cannot tell whether it was started by proximity, by an anchor or by the phone menu. Measure when the value is
+  needed (first interaction, first paint of a chart) and again on `resize`; `phone.js` fires a `resize` when it shows
+  a section and a `ds:section` event with the section id.
+- **`DOMContentLoaded` and `load` already happened.** While a deferred part runs, a listener it adds for either event is
+  called once, asynchronously, instead of never (`defer.js` shims `addEventListener` for the duration of the part).
+  The clean form needs neither: one IIFE that wires its handlers at once.
+- **Order between parts.** An eager part runs before the runtime scripts (`dsToast`, `DSLang`, `<ds-a11y>` do not
+  exist yet) and before every deferred part; a deferred part runs after all of them. Nothing a part needs from
+  another section is reliable at start — call it from a handler, or name the provider in `eager_sections`.
+- **When to use `eager_sections`.** Only when the part adds something the whole page needs at load — the core
+  `accessibility` part creates the `<ds-a11y>` button, so `new_project.py` lists it — or when another section calls a
+  function the part defines (`window.xyRender`), clones a `<template>` it builds, or registers a custom element, and
+  does so at start. The integrator keeps the list short: every eager script is paid at load. A part that only
+  listens (`ds:lang`, `ds:theme`, clicks) is never eager. The build refuses an id that is not a section and warns
+  when a deferred part registers a custom element or creates `<ds-a11y>`; `qa.mjs` fails when the accessibility
+  section exists but its button is missing at load.
+- **Checks.** `qa.mjs` scrolls the whole page and fails when a deferred script has still not started; on the phone it
+  opens every section, which starts each script in turn. A part's exception is logged with its section id.
+
+### Navigation groups (`"group"` on a section)
+Each entry of `ds.config.json → sections` may carry `"group": "<label>"`, written in the source language like the
+title. Consecutive entries with the same label form one block of the side navigation (`<details class="side-g">`
+with the label and a count); entries without a group stay plain links between the blocks. The first block is open at
+load; the block of the section in view opens itself and the others close, unless the reader opened or closed them by
+hand (that choice is remembered for the visit). The link of the section in view carries `aria-current="true"`. The top
+bar shows one link per group, to its first section, marked `aria-current` when the reader is inside it. Numbers do
+not change: the page is still numbered in list order.
+
+A filter field sits above the list (`#side-q`, labels through `tokens.py` → `filter`, `filter_label`, `no_match`,
+repainted per language by `doc.js`): accent-insensitive, a group label matches all its sections, blocks without a
+match disappear, Esc clears, Enter opens the first match, and a message says when nothing matches. On a phone the
+menu sheet shows the same blocks (44 px headers) and the field (16 px text, no zoom).
+
+Without any `group`, no block, no filter and no extra markup exist: the side navigation is the flat list it always was.
+Group labels are page text: `i18n_extract.mjs` collects them with the titles, so they are translated the same way.

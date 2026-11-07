@@ -18,6 +18,10 @@ agents copy what they see, so the foundations must already be right.
 2. Fetch the icons they will likely need (they can fetch more themselves: `fetch_icons.py get` only adds files).
 3. Fill `assets/brief_template.md` into `notes/BRIEF.md`: product facts (from discovery — the agents must not
    invent), the section contract, the quality bar, the ownership table with a **class prefix per agent**.
+4. Beyond ~15 sections, decide the navigation groups now (`"group"` on each entry of `ds.config.json`, consecutive
+   sections per group, labels in the source language) so agents see the final order; keep `eager_sections` empty
+   unless an agent tells you another section calls its function at start (`references/sections.md`, "Large systems").
+   Both keys are yours: agents never edit the config.
 
 ## Launching
 One agent per section, all in the same turn, each with: the path of BRIEF.md (read it fully first), its section

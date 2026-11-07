@@ -19,6 +19,14 @@ section. The checks therefore open every section by hash before measuring; anyth
 (screenshots, measures, extraction at phone width) must do the same (`openSection` in `_browser.mjs`), or it sees the
 first section only, or waits forever for a hidden one.
 
+### Section scripts start late
+Every section script after the first two is wrapped by the build (`runtime/defer.js`) and starts when its section comes
+near the screen, when an anchor opens it or when the phone shows it. The console check therefore scrolls the whole
+page and reports how many deferred scripts started; one still pending after the scroll is a FAIL (the wrapper or the
+section id is broken). With navigation groups, the check also opens the last section and verifies that its link is
+marked `aria-current`, that its group is open and that the filter field narrows the list and says when nothing matches.
+Your own scripts (extraction, screenshots) start every section the same way: scroll through, or open it by hash.
+
 ## Looking (must do — the checks cannot see design)
 ```bash
 node scripts/qa.mjs <project> shots                       # every section × light/dark × 1360/390 px

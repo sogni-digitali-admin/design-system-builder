@@ -73,7 +73,10 @@ them (the source language is the one the page is written in; the others are tran
 Read `references/sections.md` (core sections and their acceptance criteria) and the module files for the product
 type. Each section is `parts/<id>.html` (+ optional `.css`, `.js`, `.md`) and one entry in `ds.config.json →
 sections`; **the order of that list is the order, numbering and navigation of the page** — never number by hand.
-Write sections to the contract below. For illustrations read `references/illustrations-hairline.md`; for AI
+A long system (more than ~15 sections) gives entries an optional `"group": "<label>"` (collapsible blocks and a filter
+in the side navigation; without it the list stays flat) and lists in `eager_sections` the few sections whose script
+others call at start — every other section script starts only when its section comes near or is opened
+(`references/sections.md`, "Large systems"). Write sections to the contract below. For illustrations read `references/illustrations-hairline.md`; for AI
 assistants, chat and agents `references/ai-ux.md`; for emails `references/emails.md`; for phones and PWA
 `references/mobile-pwa.md`; for components and charts `references/components.md`; for the accessibility panel
 `references/accessibility.md`; for sign-in and account access `references/auth.md`; for in-app notifications
@@ -141,9 +144,10 @@ Every section file follows this shape, so the build can number it and the runtim
   Names, code and client content get `data-i18n-skip`. When word order differs, give one full sentence per language:
   `<span data-i18n-skip><span data-l="fr">…</span><span data-l="en">…</span></span>`.
 - **JS**: one IIFE per part, no globals except what other parts must call, no network, no CDN. Functions under 50
-  lines, files under 800 (split the part if needed). `window.dsToast(text)` shows a toast. Below 760 px the page
-  shows one section at a time (`runtime/phone.js`): a script that measures its box re-measures on `resize`, and
-  generated SVGs with `<mask>`, `<linearGradient>` or `<clipPath>` use unique ids per instance.
+  lines, files under 800 (split the part if needed). `window.dsToast(text)` shows a toast. A section script starts
+  late (when the section comes near, or is opened; `runtime/defer.js`) and below 760 px the page shows one section at
+  a time (`runtime/phone.js`): never measure at start — measure when needed and on `resize` — and give generated
+  SVGs with `<mask>`, `<linearGradient>` or `<clipPath>` unique ids per instance.
 - **Motion**: base styles are the final state; an animation only describes the start. Nothing replays while the
   screen stays the same; only a loader loops.
 - **design.md lines**: `parts/<id>.md` holds the section's rules in the terse `key: value` form
@@ -174,7 +178,7 @@ A design system people trust is specific, complete and honest:
 scripts/   plan_page.py (+ plan_schema.py, plan_strings.py) · apply_plan.py · image_facts.py (+ _pixels.mjs)
            new_project.py · build.py (+ tokens.py, splash.py) · palette_check.py · cvd_palettes.py · fetch_icons.py
            i18n_extract.mjs · i18n_merge.py · qa.mjs · hairline_look.mjs · _browser.mjs · _text.py (writes keep line endings)
-assets/    plan/ (proposals.schema.json · example.proposals.json · page.css, page_*.js) · template.html · theme-toggle.html · base.css · icon-motion.css · runtime/ (head, doc, i18n, hairline-mount, a11y, phone) · fonts/ (Atkinson Hyperlegible)
+assets/    plan/ (proposals.schema.json · example.proposals.json · page.css, page_*.js) · template.html · theme-toggle.html · base.css · icon-motion.css · runtime/ (head, defer, doc, i18n, hairline-mount, a11y, phone) · fonts/ (Atkinson Hyperlegible)
            starter/ (the core sections) · glossary_template.md · brief_template.md
 references/ discovery · planning · visual-styles · sections · tokens-and-color · icons · illustrations-hairline · components · accessibility · ai-ux
            emails · mobile-pwa · auth · notifications · search · wearables · imagery · i18n · orchestration · qa · pitfalls

@@ -48,7 +48,7 @@ Claude suit les étapes du skill :
 
 **Toujours planifier d'abord.** Avant le moindre fichier, Claude étudie la marque et le métier, puis écrit des propositions sur chaque sujet (langues, ton, style visuel, palettes claire et sombre, typographie, icônes libres adaptées au métier, illustrations, splash, écrans, assistant IA, accessibilité…). Il les rend dans **une seule page interactive** (`plan/plan.html`, autonome, hors ligne, utilisable dans un Artifact claude.ai) : tu choisis, tu modifies les teintes (les contrastes se recalculent), tu commentes, puis « Exporter mes réponses » produit `ds.plan.json` (téléchargement, copie, ou texte toujours visible). Tu redonnes ce fichier à Claude Code ; `scripts/apply_plan.py` crée ou met à jour le projet (`ds.config.json`, `notes/plan.md` avec chaque décision et sa raison, les questions ouvertes) et Claude construit à partir de là. Le splash et le chargeur animés ne se font qu'à partir d'un logo **SVG** : avec un logo en PNG ou JPG, il n'y a pas de splash, et le logo n'est jamais redessiné.
 
-Pour un gros design system, il peut répartir les sections entre plusieurs agents.
+Pour un gros design system, il peut répartir les sections entre plusieurs agents. La page reste légère quelle que soit sa taille : le script de chaque section ne démarre que lorsqu'on s'en approche ou qu'on l'ouvre, et les sections peuvent se ranger en **groupes** repliables dans la navigation latérale, avec un champ de filtre (clé `"group"` dans `ds.config.json` ; sans elle, la liste reste plate).
 
 ## Les commandes, si vous voulez les lancer à la main
 

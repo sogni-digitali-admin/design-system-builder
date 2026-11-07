@@ -80,16 +80,94 @@
     });
   });
 
-  /* sidebar: highlight the section in view */
-  var links = {};
+  /* sidebar: the section in view is highlighted (aria-current). With groups (sections carrying "group" in
+     ds.config.json, rendered as details.side-g), its block opens and the others close, unless the reader
+     opened or closed them by hand; the top bar marks its group. Without groups the list is flat and only the highlight runs. */
+  var side = document.querySelector(".side"), links = {}, tops = {}, active = null, userOpen = {};
+  var groups = [].slice.call(document.querySelectorAll(".side-g"));
   document.querySelectorAll(".side a[href^='#']").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+  document.querySelectorAll(".nav a[data-group]").forEach(function (a) { tops[a.getAttribute("data-group")] = a; });
+  function filtering() { return side && side.classList.contains("is-filtering"); }
+  /* a change this script makes is not remembered as the reader's wish ("toggle" fires after the change) */
+  function setOpen(d, on) { if (d.open !== on) { d.dataset.auto = "1"; d.open = on; } }
+  groups.forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.dataset.auto) { delete d.dataset.auto; return; }
+      if (!filtering()) userOpen[d.id] = d.open;
+    });
+  });
+  function revealLink(a) {
+    if (!side || side.offsetParent === null) return;
+    var sr = side.getBoundingClientRect(), r = a.getBoundingClientRect(), pad = 64;
+    if (r.top < sr.top + pad) side.scrollTop -= sr.top + pad - r.top;
+    else if (r.bottom > sr.bottom - 24) side.scrollTop += r.bottom - sr.bottom + 24;
+  }
+  function activate(id) {
+    var a = links[id];
+    if (!a || a === active) return;
+    if (active) { active.classList.remove("is-active"); active.removeAttribute("aria-current"); }
+    active = a; a.classList.add("is-active"); a.setAttribute("aria-current", "true");
+    var g = a.closest(".side-g");
+    groups.forEach(function (d) {
+      d.classList.toggle("has-active", d === g);
+      if (filtering()) return;
+      if (d === g) { if (userOpen[d.id] !== false) setOpen(d, true); }
+      else if (!userOpen[d.id]) setOpen(d, false);
+    });
+    Object.keys(tops).forEach(function (k) {
+      if (g && k === g.id) tops[k].setAttribute("aria-current", "true"); else tops[k].removeAttribute("aria-current");
+    });
+    if (!filtering()) requestAnimationFrame(function () { revealLink(a); });
+  }
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting || !links[e.target.id]) return;
-        Object.keys(links).forEach(function (k) { links[k].classList.toggle("is-active", k === e.target.id); });
-      });
+      entries.forEach(function (e) { if (e.isIntersecting && links[e.target.id]) activate(e.target.id); });
     }, { rootMargin: "-30% 0px -60% 0px" });
-    document.querySelectorAll("main section[id]").forEach(function (s) { io.observe(s); });
+    document.querySelectorAll("main section[id]").forEach(function (s) { if (links[s.id]) io.observe(s); });
+  }
+
+  /* filter field (grouped navigation only): accent-insensitive, a group label matches all its sections,
+     Esc clears, Enter opens the first match; labels come from DS.labels.nav, one string per language */
+  var q = document.getElementById("side-q"), none = side && side.querySelector(".side-none");
+  function norm(t) { return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function matchLinks(scope, v, whole) {
+    var hit = false;
+    scope.querySelectorAll("a[href^='#']").forEach(function (a) {
+      var m = !v || whole || norm(a.textContent).indexOf(v) >= 0;
+      a.classList.toggle("no-match", !m); hit = hit || m;
+    });
+    return hit;
+  }
+  function filterNav() {
+    var v = norm(q.value.trim()), any = false;
+    side.classList.toggle("is-filtering", !!v);
+    groups.forEach(function (d) {
+      var hit = matchLinks(d, v, v && norm(d.querySelector(".side-gt").textContent).indexOf(v) >= 0);
+      d.classList.toggle("has-match", hit); any = any || hit;
+      setOpen(d, v ? hit : (!!userOpen[d.id] || d.classList.contains("has-active")));
+    });
+    side.querySelectorAll("nav > a[href^='#']").forEach(function (a) {
+      var m = !v || norm(a.textContent).indexOf(v) >= 0;
+      a.classList.toggle("no-match", !m); any = any || m;
+    });
+    if (none) none.hidden = !v || any;
+  }
+  function paintFilter() {
+    var L = DS.labels.nav, lab = side.querySelector("label[for='side-q']");
+    if (!L) return;
+    q.placeholder = labelOf(L.filter);
+    if (lab) lab.textContent = labelOf(L.filter_label);
+    if (none) none.textContent = labelOf(L.no_match);
+  }
+  if (q && side) {
+    q.addEventListener("input", filterNav);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && q.value) { e.preventDefault(); q.value = ""; filterNav(); }
+      if (e.key === "Enter") {
+        var first = side.querySelector("nav a[href^='#']:not(.no-match)");
+        if (first) { e.preventDefault(); first.click(); first.focus(); }
+      }
+    });
+    document.addEventListener("ds:lang", paintFilter);
   }
 })();

@@ -1,6 +1,6 @@
 // Quality checks on a built design system page.
 //   node qa.mjs <project_dir> [all|console|requests|mobile|a11y|i18n|shots] [--file NAME.html] [--section ID] [--lang all|xx] [--out DIR]
-// all = console + requests + mobile + a11y + i18n (exit code 1 on any FAIL). shots writes PNGs you must then open and look at.
+// all = console (+ deferred scripts, navigation groups) + requests + mobile + a11y + i18n (exit code 1 on any FAIL). shots writes PNGs you must then open and look at.
 import { readFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { launch, openPage, scrollThrough, fileUrl, sectionIds, openSection } from "./_browser.mjs";
@@ -43,8 +43,43 @@ async function checkConsole(b) {
     await page.waitForTimeout(500);
     errors.forEach((e) => fail(`${theme}: ${e.slice(0, 240)}`));
     if (!errors.length) console.log(`  ok ${theme}: no error`);
+    // deferred section scripts (runtime/defer.js): after a full scroll every one of them has started
+    const d = await page.evaluate(() => (window.dsDeferState ? window.dsDeferState() : null));
+    if (d && d.pending.length) fail(`${theme}: ${d.pending.length} deferred section scripts never started after a full scroll: ${d.pending.join(", ")}`);
+    else if (d) console.log(`  ok ${theme}: ${d.started.length} deferred section scripts started after the scroll`);
     await page.close();
   }
+}
+
+// Grouped side navigation (sections with "group"): the open section's link is current and its block open; the filter narrows.
+async function checkNav(b) {
+  const { page } = await openPage(b, file, base);
+  const groups = await page.evaluate(() => document.querySelectorAll(".side-g").length);
+  if (!groups) { await page.close(); return; }
+  console.log("\n# side navigation groups and filter (1360 px)");
+  // the first section of the second group: scrolled to the top of the screen it is the one in view (a short last section may not be)
+  const grouped = cfg.sections.filter((s) => s.group), second = grouped.find((s) => s.group !== grouped[0].group) || grouped[0];
+  await openSection(page, second.id);
+  await page.waitForTimeout(800);
+  const state = await page.evaluate((id) => {
+    const a = document.querySelector(`.side a[href="#${id}"]`), g = a && a.closest(".side-g");
+    return { current: a && a.getAttribute("aria-current") === "true", open: !g || g.open, openGroups: [...document.querySelectorAll(".side-g[open]")].length,
+      top: !g || document.querySelector(`.nav a[data-group="${g.id}"]`)?.getAttribute("aria-current") === "true" };
+  }, second.id);
+  if (!state.current || !state.open || !state.top) fail(`#${second.id} opened: link current ${state.current}, group open ${state.open}, top group current ${state.top}`);
+  else console.log(`  ok ${groups} groups; #${second.id} opened: its link is current, its group open (${state.openGroups} open), its top link current`);
+  const count = () => page.evaluate(() => ({ links: [...document.querySelectorAll(".side nav a[href^='#']")].filter((a) => a.getClientRects().length).length, none: !document.querySelector(".side-none").hidden }));
+  const all = await count();
+  await page.fill("#side-q", second.title);
+  const hit = await count();
+  await page.fill("#side-q", "zzqzzqzz");
+  const miss = await count();
+  await page.fill("#side-q", "");
+  const back = await count();
+  if (!(hit.links >= 1 && hit.links < all.links) || !miss.none || miss.links !== 0 || back.links !== all.links || back.none)
+    fail(`filter: ${all.links} links, "${second.title}" leaves ${hit.links}, nonsense leaves ${miss.links} (message ${miss.none}), cleared gives ${back.links}`);
+  else console.log(`  ok filter: ${all.links} links, "${second.title}" leaves ${hit.links}, nonsense shows the no-match message, cleared restores ${back.links}`);
+  await page.close();
 }
 
 async function checkRequests(b) {
@@ -172,6 +207,7 @@ async function checkA11y(b) {
   for (const theme of THEMES) {
     const { page, errors } = await openPage(b, file, { ...base, theme, width: 390, height: 844 });
     const has = await page.evaluate(() => !!(window.DSA11y && window.DSA11y.element));
+    if (!has && cfg.sections.some((s) => s.id === "accessibility")) { fail("the accessibility section exists but its <ds-a11y> button is missing at load: list \"accessibility\" in eager_sections (its script starts late otherwise)"); await page.close(); return; }
     if (!has) { console.log("  skip: no <ds-a11y> on the page"); await page.close(); return; }
     await page.evaluate(() => { const el = window.DSA11y.element; el.prefs = Object.assign({}, el.prefs, { text: 200 }); });
     await page.waitForTimeout(1500);
@@ -212,6 +248,7 @@ async function shots(b) {
 const b = await launch();
 try {
   if (cmd === "all" || cmd === "console") await checkConsole(b);
+  if (cmd === "all" || cmd === "console") await checkNav(b);
   if (cmd === "all" || cmd === "requests") await checkRequests(b);
   if (cmd === "all" || cmd === "mobile") await checkMobile(b);
   if (cmd === "all" || cmd === "a11y") await checkA11y(b);
