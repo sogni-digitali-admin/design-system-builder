@@ -21,6 +21,9 @@ names and client content `data-i18n-skip`; amounts written in the source format.
 Real microcopy and demo data, every state (empty, loading, error, success, disabled, focus), light and dark,
 no overflow at 390 px, keyboard and focus visible, `prefers-reduced-motion`, contrast AA, status = icon + word.
 Functions < 50 lines, files < 800 lines, no network or CDN, no secrets.
+Your script starts only when your section comes near the screen or is opened (and below 760 px when the reader
+opens it): never measure at start, measure when needed and on `resize`; expose nothing another section needs at start
+without telling the integrator (`eager_sections`).
 
 ## 5. Ownership
 | Agent | Section id | Files you own | Class prefix |

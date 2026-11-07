@@ -3,7 +3,8 @@
     python new_project.py <dir> --name "Acme" [--slug acme] [--type crm] [--langs fr,en] [--source fr]
                           [--themes light,dark,brand[:dark|:light]]
 
-Creates ds.config.json (placeholder neutral palette, the core sections in order; each theme after light and dark
+Creates ds.config.json (placeholder neutral palette, the core sections in order, eager_sections = ["accessibility"]
+since that part creates the page-wide accessibility button at load; each theme after light and dark
 is a block copied from dark or light, with a TODO note, so the page offers a theme picker), parts/ (the starter sections,
 written in English: rewrite their visible text in the source language), i18n/glossary.md, icons/,
 hairline/figures/, notes/. Never overwrites an existing project.
@@ -19,6 +20,9 @@ import re
 import shutil
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from _text import write_text  # noqa: E402
 
 SKILL = Path(__file__).resolve().parent.parent
 STARTER = SKILL / "assets" / "starter"
@@ -92,6 +96,9 @@ def config(name: str, slug: str, kind: str, langs: list[str], source: str, theme
         **PLACEHOLDER,
         "hairline": {"enabled": True},
         "sections": [{"id": i, "title": t, "part": p, "icon": ic, "motion": m} for i, t, p, ic, m in CORE],
+        # section scripts start when their section comes near (runtime/defer.js); the accessibility part creates the
+        # page-wide <ds-a11y> button, so it starts at load. Add here any section whose function others call at start.
+        "eager_sections": ["accessibility"],
     }
     if extra["themes"]:
         cfg["themes"] = {**cfg["themes"], **extra["themes"]}
@@ -122,7 +129,7 @@ def main() -> None:
     for f in STARTER.glob("*.*"):
         shutil.copy2(f, project / "parts" / f.name)
     shutil.copy2(SKILL / "assets" / "glossary_template.md", project / "i18n" / "glossary.md")
-    (project / "ds.config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_text(project / "ds.config.json", json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
     print("created %s" % project)
     print("note: no logo yet. The splash is a scaffold placeholder; set logo.mark to an SVG, or remove the splash section when the logo is raster.")
     print("next:\n  python %s/scripts/fetch_icons.py get \"%s\" lucide %s"

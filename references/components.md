@@ -20,6 +20,10 @@
   for long forms whose links focus the field. Never only red.
 - **Touch targets** ≥ 44 px on phones; spacing between destructive and safe actions.
 - **Loading**: under 300 ms show nothing; then a skeleton shaped like the content; over 8 s explain.
+- **Motion**: the base styles ARE the final state; an animation only describes where the element starts (`from`),
+  so a reader with reduced motion, a print, a screenshot or a second visit sees the finished screen. Nothing
+  replays while the screen stays the same (not on a language or theme switch, not on re-render); only a loader
+  loops. Every movement stops under `prefers-reduced-motion` and `html[data-a11y-motion="reduce"]`.
 - **Copy**: buttons are verbs ("Send the quote"), titles say the object, empty states say what will appear and give
   the one action that makes it appear.
 

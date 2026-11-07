@@ -5,6 +5,15 @@ In the page, draw phone frames (390 × 844 CSS px, rounded 44 px, notch/status b
 each holding one real screen of the product in light or dark. Make them scroll inside the frame. Below 760 px the
 frames become full-width screens.
 
+## The design system page itself on a phone
+Below 760 px the built page reads one section at a time (`assets/runtime/phone.js`, shipped by the build): the top
+bar shows the section's name and a menu button; the menu is the side navigation as a sheet (languages, theme,
+design.md, the open section's sub-parts from its `h3.sub`, every section); previous / next sit under the section.
+Anchors keep working (a link to `#products-list` opens Products and scrolls there). What a part must know:
+- controls get 44 px targets and fields 16 px text from `base.css`; keep that when you style your own;
+- a script that measures its box must listen to `resize` (fired when a section opens) or `ds:section`;
+- SVGs you generate with `<mask>`, `<linearGradient>`, `<clipPath>` or `<filter>` get unique ids per instance.
+
 ## Navigation
 - **Bottom bar**: 4–5 destinations max, the most used first; an optional central action (+) for the product's main
   creation (new lead, new booking). Icon + short label always; the current one filled/coloured with

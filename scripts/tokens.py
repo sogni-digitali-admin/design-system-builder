@@ -29,36 +29,66 @@ UI = {
            "toggle": "Switch light / dark", "download": "Download design.md", "top": "top of page",
            "on": "on", "page": "page background", "surface": "card surface", "text": "Text", "muted": "Muted text",
            "primary": "Primary", "button": "Button text on primary", "accent": "Accent", "soft": "on its pale background",
-           "aaa": "AAA", "aa": "AA", "large": "Large text / graphics", "deco": "Decorative only", "copy": "Copy", "auto": "Auto", "theme": "Theme", "col_colour": "Colour", "col_on": "On", "col_ratio": "Ratio", "col_use": "Use"},
+           "aaa": "AAA", "aa": "AA", "large": "Large text / graphics", "deco": "Decorative only", "copy": "Copy", "auto": "Auto", "theme": "Theme", "col_colour": "Colour", "col_on": "On", "col_ratio": "Ratio", "col_use": "Use",
+           "menu": "Menu", "close_menu": "Close the menu", "sections": "Sections", "in_section": "In this section",
+           "previous": "Previous", "next": "Next", "prev_next": "Previous and next section",
+           "filter": "Filter…", "filter_label": "Filter the sections", "no_match": "No section matches."},
     "fr": {"language": "Langue", "light": "Clair", "dark": "Sombre", "copied": "Copié", "contents": "Sommaire",
            "toggle": "Basculer clair / sombre", "download": "Télécharger design.md", "top": "haut de page",
            "on": "sur", "page": "fond de page", "surface": "surface des cartes", "text": "Texte", "muted": "Texte atténué",
            "primary": "Couleur principale", "button": "Texte de bouton sur couleur principale", "accent": "Accent",
            "soft": "sur son fond pâle", "aaa": "AAA", "aa": "AA", "large": "Grand texte / graphisme",
-           "deco": "Décoratif seulement", "copy": "Copier", "auto": "Auto", "theme": "Thème", "col_colour": "Couleur", "col_on": "Sur", "col_ratio": "Ratio", "col_use": "Usage"},
+           "deco": "Décoratif seulement", "copy": "Copier", "auto": "Auto", "theme": "Thème", "col_colour": "Couleur", "col_on": "Sur", "col_ratio": "Ratio", "col_use": "Usage",
+           "menu": "Menu", "close_menu": "Fermer le menu", "sections": "Sections", "in_section": "Dans cette section",
+           "previous": "Précédent", "next": "Suivant", "prev_next": "Section précédente et suivante",
+           "filter": "Filtrer…", "filter_label": "Filtrer les sections", "no_match": "Aucune section ne correspond."},
     "it": {"language": "Lingua", "light": "Chiaro", "dark": "Scuro", "copied": "Copiato", "contents": "Indice",
            "toggle": "Passa a chiaro / scuro", "download": "Scarica design.md", "top": "inizio pagina",
            "on": "su", "page": "sfondo pagina", "surface": "superficie delle card", "text": "Testo", "muted": "Testo attenuato",
            "primary": "Colore principale", "button": "Testo del pulsante sul colore principale", "accent": "Accento",
            "soft": "sul suo fondo chiaro", "aaa": "AAA", "aa": "AA", "large": "Testo grande / grafica",
-           "deco": "Solo decorativo", "copy": "Copia", "auto": "Auto", "theme": "Tema", "col_colour": "Colore", "col_on": "Su", "col_ratio": "Rapporto", "col_use": "Uso"},
+           "deco": "Solo decorativo", "copy": "Copia", "auto": "Auto", "theme": "Tema", "col_colour": "Colore", "col_on": "Su", "col_ratio": "Rapporto", "col_use": "Uso",
+           "menu": "Menu", "close_menu": "Chiudi il menu", "sections": "Sezioni", "in_section": "In questa sezione",
+           "previous": "Precedente", "next": "Successiva", "prev_next": "Sezione precedente e successiva",
+           "filter": "Filtra…", "filter_label": "Filtra le sezioni", "no_match": "Nessuna sezione corrisponde."},
     "es": {"language": "Idioma", "light": "Claro", "dark": "Oscuro", "copied": "Copiado", "contents": "Índice",
            "toggle": "Cambiar claro / oscuro", "download": "Descargar design.md", "top": "inicio de página",
            "on": "sobre", "page": "fondo de página", "surface": "superficie de tarjetas", "text": "Texto", "muted": "Texto atenuado",
            "primary": "Color principal", "button": "Texto de botón sobre color principal", "accent": "Acento",
            "soft": "sobre su fondo claro", "aaa": "AAA", "aa": "AA", "large": "Texto grande / gráficos",
-           "deco": "Solo decorativo", "copy": "Copiar", "auto": "Auto", "theme": "Tema", "col_colour": "Color", "col_on": "Sobre", "col_ratio": "Proporción", "col_use": "Uso"},
+           "deco": "Solo decorativo", "copy": "Copiar", "auto": "Auto", "theme": "Tema", "col_colour": "Color", "col_on": "Sobre", "col_ratio": "Proporción", "col_use": "Uso",
+           "menu": "Menú", "close_menu": "Cerrar el menú", "sections": "Secciones", "in_section": "En esta sección",
+           "previous": "Anterior", "next": "Siguiente", "prev_next": "Sección anterior y siguiente",
+           "filter": "Filtrar…", "filter_label": "Filtrar las secciones", "no_match": "Ninguna sección coincide."},
     "de": {"language": "Sprache", "light": "Hell", "dark": "Dunkel", "copied": "Kopiert", "contents": "Inhalt",
            "toggle": "Hell / dunkel umschalten", "download": "design.md herunterladen", "top": "Seitenanfang",
            "on": "auf", "page": "Seitenhintergrund", "surface": "Kartenfläche", "text": "Text", "muted": "Gedämpfter Text",
            "primary": "Primärfarbe", "button": "Buttontext auf Primärfarbe", "accent": "Akzent",
            "soft": "auf seinem hellen Grund", "aaa": "AAA", "aa": "AA", "large": "Großer Text / Grafik",
-           "deco": "Nur dekorativ", "copy": "Kopieren", "auto": "Auto", "theme": "Farbschema", "col_colour": "Farbe", "col_on": "Auf", "col_ratio": "Verhältnis", "col_use": "Verwendung"},
+           "deco": "Nur dekorativ", "copy": "Kopieren", "auto": "Auto", "theme": "Farbschema", "col_colour": "Farbe", "col_on": "Auf", "col_ratio": "Verhältnis", "col_use": "Verwendung",
+           "menu": "Menü", "close_menu": "Menü schließen", "sections": "Abschnitte", "in_section": "In diesem Abschnitt",
+           "previous": "Zurück", "next": "Weiter", "prev_next": "Vorheriger und nächster Abschnitt",
+           "filter": "Filtern…", "filter_label": "Abschnitte filtern", "no_match": "Kein Abschnitt passt."},
 }
+PHONE_KEYS = ("menu", "close_menu", "sections", "in_section", "previous", "next", "prev_next")  # runtime/phone.js
+NAV_KEYS = ("filter", "filter_label", "no_match")  # the side navigation filter (grouped sections), runtime/doc.js
 
 
 def ui_text(lang: str, key: str) -> str:
     return UI.get(lang, UI["en"]).get(key, UI["en"][key])
+
+
+def runtime_labels(keys: tuple, cfg: dict) -> dict:
+    """Labels a runtime script paints itself, one string per language: {key: {lang: text}} (read with dsT)."""
+    return {k: {l: ui_text(l, k) for l in cfg["langs"]} for k in keys}
+
+
+def phone_labels(cfg: dict) -> dict:
+    return runtime_labels(PHONE_KEYS, cfg)
+
+
+def nav_labels(cfg: dict) -> dict:
+    return runtime_labels(NAV_KEYS, cfg)
 
 
 # --------------------------------------------------------------------------- colour maths

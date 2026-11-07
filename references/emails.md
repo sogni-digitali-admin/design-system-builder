@@ -20,6 +20,22 @@ Plus **signatures** (several layouts: minimal, with photo, with logo and links, 
   for the build's markers. Every variable has a fallback ("Hello," when the name is missing).
 - Legal footer per country (company id, address, why you receive this, unsubscribe for marketing only).
 - Prefix every class in the email (`o-btn`, not `btn`): the design page's own CSS would style them otherwise.
+- **Images**: PNG or JPG only, never SVG (Gmail and Outlook drop it), each with `width`, `height` and `alt`, hosted
+  on https at **one URL per role** (logo-light, logo-dark, mark, each figure, each portrait): the sending code
+  swaps a base URL, never a file name. A QR code sits on a fixed white plate in every mode (a dark client would
+  invert it). A portrait has a fallback that reads without images (initials on the brand colour as `alt`, or an
+  initials medallion when the person has no photo). A plural next to a number comes from the backend as one
+  ready-made string (`{{count_label}}` = "4 new items"), never `{{n}}` + a fixed word.
+
+## Hand-over to the sending code
+What the developers receive, so the real e-mails are the ones designed:
+- **Reference export**: one rendered file per template and language (`dist/emails/<lang>/<name>.html`) with the
+  variables left **intact** (`{{first_name}}`, `{% if … %}`), plus an inventory (`inventory.json`: name, subject,
+  preheader, sender, variables, images used). The export is generated from the same data as the page.
+- **Inventory against reality**: list every e-mail the code actually sends (grep the senders) and map each to a
+  template; what has no template is written, what has a template but still goes out as raw HTML is flagged. The
+  table lives in Notes until every row is green.
+- **Hosting gate**: the image URLs must answer 200 before any real send; until then the export says so at the top.
 
 ## In the design system page
 - A viewer: list of templates (family, trigger, language), the email rendered in an `<iframe srcdoc>` (isolated

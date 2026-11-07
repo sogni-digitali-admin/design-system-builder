@@ -5,7 +5,8 @@ Usage:
     python build.py <project_dir> --out NAME.html  preview: writes dist/NAME.html only (safe for parallel agents)
 
 The project folder (create it with new_project.py) holds:
-    ds.config.json        brand, languages, tokens, the ordered list of sections
+    ds.config.json        brand, languages, tokens, the ordered list of sections (optional "group" per section:
+                          collapsible blocks in the side navigation), optional eager_sections (scripts started at load)
     parts/<part>.html     one section each; optional <part>.css, <part>.js, <part>.md (its design.md lines)
     icons/*.svg           icons, written in parts as {{ICON:name}} or {{ICON:name:motion}}
     hairline/figures/*.js custom Hairline figures (optional)
@@ -57,6 +58,9 @@ def load_config(project: Path) -> dict:
     ids = [s["id"] for s in cfg["sections"]]
     if len(ids) != len(set(ids)):
         sys.exit("ds.config.json: two sections share an id")
+    unknown = [e for e in cfg.get("eager_sections", []) if e not in ids]
+    if unknown:
+        sys.exit("ds.config.json: eager_sections names sections that do not exist: %s" % ", ".join(unknown))
     missing = [t for t in TK.BASES if t not in cfg["themes"]]
     if missing:
         sys.exit("ds.config.json: themes must include light and dark (more themes may follow); missing %s" % ", ".join(missing))
@@ -110,14 +114,47 @@ def sections(cfg: dict, project: Path) -> list[tuple]:
     return out
 
 
-def navs(project: Path, secs: list[tuple]) -> tuple[str, str]:
-    top = "".join('<a href="#%s">%s</a>' % (s["id"], html.escape(s["title"])) for _n, s, *_ in secs)
-    side = []
+def nav_groups(secs: list[tuple]) -> list[tuple[str | None, list[tuple]]]:
+    """Consecutive sections sharing the optional "group" key form one block of the side navigation."""
+    out: list[tuple[str | None, list[tuple]]] = []
     for n, s, *_ in secs:
+        g = s.get("group") or None
+        if not out or out[-1][0] != g:
+            out.append((g, []))
+        out[-1][1].append((n, s))
+    return out
+
+
+def side_filter(cfg: dict) -> str:
+    """The filter field above a grouped side navigation; its labels are repainted per language by runtime/doc.js."""
+    return ('<div class="side-filter" role="search" data-i18n-skip><label class="side-vh" for="side-q">%s</label>'
+            '<input id="side-q" class="side-q" type="search" autocomplete="off" spellcheck="false" placeholder="%s" aria-controls="side-nav">'
+            '<p class="side-none" hidden>%s</p></div>'
+            % (html.escape(ui(cfg, "filter_label")), html.escape(ui(cfg, "filter")), html.escape(ui(cfg, "no_match"))))
+
+
+def navs(project: Path, cfg: dict, secs: list[tuple]) -> tuple[str, str, str]:
+    """Top navigation, side navigation and the side filter. Sections without "group" render as a flat list, exactly
+    as before, and the filter is empty; grouped sections become <details> blocks (the first one open), the top bar
+    links to each group's first section, and the filter field narrows the links."""
+    def link(n: int, s: dict) -> str:
         ic = icon_svg(project, s["icon"], s.get("motion", "pop")) if s.get("icon") else ""
-        side.append('<a class="oi" href="#%s"><span class="side-n">%02d</span>%s<span>%s</span></a>'
-                    % (s["id"], n, ic, html.escape(s["title"])))
-    return top, "".join(side)
+        return ('<a class="oi" href="#%s"><span class="side-n">%02d</span>%s<span>%s</span></a>'
+                % (s["id"], n, ic, html.escape(s["title"])))
+    groups = nav_groups(secs)
+    side, top = [], []
+    for gi, (g, items) in enumerate(groups):
+        if not g:
+            side.extend(link(n, s) for n, s in items)
+            top.extend('<a href="#%s">%s</a>' % (s["id"], html.escape(s["title"])) for _n, s in items)
+            continue
+        gid = "side-g%d" % (gi + 1)
+        side.append('<details class="side-g" id="%s"%s><summary class="side-gh"><span class="side-gt">%s</span>'
+                    '<span class="side-gc">%d</span></summary><div class="side-gl">%s</div></details>'
+                    % (gid, " open" if gi == 0 else "", html.escape(g), len(items), "".join(link(n, s) for n, s in items)))
+        top.append('<a href="#%s" data-group="%s">%s</a>' % (items[0][1]["id"], gid, html.escape(g)))
+    grouped = any(g for g, _ in groups)
+    return "".join(top), "".join(side), side_filter(cfg) if grouped else ""
 
 
 def lang_switch(cfg: dict) -> str:
@@ -207,15 +244,37 @@ def theme_control(cfg: dict) -> str:
 
 def runtime_js(cfg: dict, project: Path) -> str:
     conf = {"slug": cfg["slug"], "source": cfg["source_lang"], "langs": cfg["langs"], "themes": TK.theme_ids(cfg),
-            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied"), **theme_labels(cfg)},
+            "labels": {"light": ui(cfg, "light"), "dark": ui(cfg, "dark"), "copied": ui(cfg, "copied"), **theme_labels(cfg),
+                       "phone": TK.phone_labels(cfg), "nav": TK.nav_labels(cfg)},
             "a11yCss": TK.a11y_css(cfg)}
     dict_path = project / "i18n" / "dict.json"
     data = json.loads(read(dict_path)) if dict_path.exists() else {}
     js = "window.DS = %s;\nwindow.DSI18n = %s;\n" % (json.dumps(conf, ensure_ascii=False),
                                                    json.dumps(data, ensure_ascii=False, separators=(",", ":")))
-    for name in ("doc.js", "hairline-mount.js", "a11y.js", "i18n.js"):
+    # phone.js last: it moves the controls the others have wired, and reads one section at a time below 760 px
+    for name in ("doc.js", "hairline-mount.js", "a11y.js", "i18n.js", "phone.js"):
         js += "\n" + read(ASSETS / "runtime" / name)
     return script_safe(js)
+
+
+EAGER_FIRST = 2  # the first sections (hero and its neighbour) always start at load: they are on screen anyway
+PAGE_WIDE = re.compile(r"customElements\.define\(|createElement\(\s*[\"']ds-a11y[\"']")  # what a deferred part should not add
+
+
+def parts_js(cfg: dict, secs: list[tuple]) -> str:
+    """One <script> per section (an exception stays in its section). A section's script starts when the section comes
+    near the screen, when an anchor opens it or when the phone runtime shows it (runtime/defer.js), except the first
+    EAGER_FIRST sections and those listed in ds.config.json → eager_sections (other sections call them at start)."""
+    eager = set(cfg.get("eager_sections", [])) | {s["id"] for _n, s, *_ in secs[:EAGER_FIRST]}
+    out = [read(ASSETS / "runtime" / "defer.js")]
+    for _n, s, _html, _css, js, _md in secs:
+        if not js.strip():
+            continue
+        if s["id"] not in eager and PAGE_WIDE.search(js):
+            print("  warning: parts/%s.js adds something page-wide (a custom element, <ds-a11y>) but starts only when its "
+                  "section comes near; list \"%s\" in eager_sections if the page needs it at load" % (s.get("part", s["id"]), s["id"]), file=sys.stderr)
+        out.append(js if s["id"] in eager else "dsDefer(%s, function () {\n%s\n});" % (json.dumps(s["id"]), js))
+    return "</script>\n<script>".join(script_safe(x) for x in out)
 
 
 def head_js(cfg: dict) -> str:
@@ -249,16 +308,16 @@ def extra_theme_markers(cfg: dict) -> dict[str, str]:
 
 
 def page_markers(cfg: dict, project: Path, secs: list[tuple], md: str) -> dict[str, str]:
-    top, side = navs(project, secs)
+    top, side, flt = navs(project, cfg, secs)
     css = TK.tokens_css(cfg)
     return {
         "LANG": cfg["source_lang"], "NAME": html.escape(cfg["name"]), "VERSION": html.escape(str(cfg.get("version", "1.0"))),
         "DATE": html.escape(cfg.get("date", "")), "DESCRIPTION": html.escape(cfg.get("summary", "")),
         "HEAD_JS": head_js(cfg), "FONT_FACES": font_faces(cfg), "TOKENS_CSS": css,
         "BASE_CSS": read(ASSETS / "base.css") + _bridge(cfg), "ICON_MOTION_CSS": read(ASSETS / "icon-motion.css"),
-        "PARTS_CSS": "\n".join(s[3] for s in secs), "PARTS_JS": script_safe("\n;\n".join(s[4] for s in secs if s[4].strip())),
+        "PARTS_CSS": "\n".join(s[3] for s in secs), "PARTS_JS": parts_js(cfg, secs),
         "LOGO_LIGHT": logo(project, cfg, "light"), "LOGO_DARK": logo(project, cfg, "dark"),
-        "TOPNAV": top, "SIDENAV": side, "LANG_SWITCH": lang_switch(cfg),
+        "TOPNAV": top, "SIDENAV": side, "SIDE_FILTER": flt, "LANG_SWITCH": lang_switch(cfg),
         "UI_CONTENTS": ui(cfg, "contents"), "UI_TOGGLE": ui(cfg, "toggle"), "UI_LIGHT": ui(cfg, "light"),
         "UI_DOWNLOAD": ui(cfg, "download"), "UI_TOP": ui(cfg, "top"), "THEME_CONTROL": theme_control(cfg),
         "THEME_COUNT": str(len(TK.theme_ids(cfg))), "THEME_CARDS": TK.theme_cards(cfg), "CONTRAST_TABLES": TK.contrast_tables(cfg),

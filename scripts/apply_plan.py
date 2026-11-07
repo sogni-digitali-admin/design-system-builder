@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import new_project as NP  # noqa: E402
 import plan_schema as PS  # noqa: E402
 import tokens as TK  # noqa: E402
+from _text import write_text  # noqa: E402
 
 SKILL = Path(__file__).resolve().parent.parent
 FEATURE_SECTIONS = {"mobile": ("mobile", "references/mobile-pwa.md"), "wearables": ("wearables", "references/wearables.md"),
@@ -343,7 +344,7 @@ def write_notes(project: Path, plan: dict, decs: list[dict], ctx: dict, info: di
     if answered:
         lines += ["## Answered questions", ""] + ["- " + a for a in answered] + [""]
     (project / "notes").mkdir(exist_ok=True)
-    (project / "notes" / "plan.md").write_text("\n".join(lines), encoding="utf-8")
+    write_text(project / "notes" / "plan.md", "\n".join(lines))
 
 
 # --------------------------------------------------------------------------- project
@@ -413,7 +414,7 @@ def main() -> None:
         cfg["planned_sections"] = [{"id": k, "reference": v, "status": "to write"} for k, v in sorted(ctx["planned"].items())]
     info = {"when": datetime.date.today().isoformat(), "export_name": plan_path.name, "sha": hashlib.sha256(raw).hexdigest(), "match": match}
     cfg["plan"] = {"export_sha256": info["sha"], "generated_from": plan.get("generated_from"), "applied": info["when"]}
-    (project / "ds.config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_text(project / "ds.config.json", json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
     write_notes(project, plan, decs, ctx, info)
     print("updated %s and %s (%d open questions)" % (project / "ds.config.json", project / "notes" / "plan.md", len(ctx["questions"])))
     print("next:\n  " + "\n  ".join(next_commands(project, ctx)))
